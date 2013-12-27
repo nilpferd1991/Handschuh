@@ -75,7 +75,7 @@ inline int TW_SendStart() {
 	// In TWSR steht der Status der Übermittlung: Die ersten 5 Bits (0xF8) gebenden Status an.
 	if ((TWSR & 0xF8) != TW_START && (TWSR & 0xF8) != TW_REP_START) {
 		// Fehler
-		dataBuffer[0] = (TWSR & 0xF8);
+		//dataBuffer[0] = (TWSR & 0xF8);
 		return 0;
 	}
 
@@ -94,7 +94,7 @@ inline int TW_SendAdress(uint8_t adress) {
 	// In TWSR steht der Status der Übermittlung: Die ersten 5 Bits (0xF8) gebenden Status an.
 	if ((TWSR & 0xF8) != TW_MT_SLA_ACK && (TWSR & 0xF8) != TW_MR_SLA_ACK) {
 		// Fehler
-		dataBuffer[0] = (TWSR & 0xF8);
+		//dataBuffer[0] = (TWSR & 0xF8);
 		return 0;
 	}
 
@@ -113,7 +113,7 @@ inline int TW_SendData(uint8_t data) {
 	// In TWSR steht der Status der Übermittlung: Die ersten 5 Bits (0xF8) gebenden Status an.
 	if ((TWSR & 0xF8) != TW_MT_DATA_ACK) {
 		// Fehler
-		dataBuffer[0] = (TWSR & 0xF8);
+		//dataBuffer[0] = (TWSR & 0xF8);
 		return 0;
 	}
 
@@ -139,14 +139,14 @@ ISR (TIMER0_OVF_vect)
 
 		// Write: Read-Offset ab Adresse 02h (Daten)
 		if (!TW_SendStart() || !TW_SendAdress(SLA_W) || !TW_SendData(0x02) ) {
-			usbMsgPtr = dataBuffer;
-			return 0;
+			// ERROR
+			return;
 		}
 
 		// Read: Daten ab jetzt
 		if (!TW_SendStart() || !TW_SendAdress(SLA_R)) {
-			usbMsgPtr = dataBuffer;
-			return 0;
+			// ERROR
+			return;
 		}
 
 		// 5 Datensätze lesen, nach dem 6. abbrechen

@@ -3,8 +3,8 @@
  * Author: Nils Braun
  */
 
-
 #include "usb.h"
+#include <util/delay.h>
 
 // Deklaration der externen Daten
 uint8_t sensorData[BUFFER_SIZE];
