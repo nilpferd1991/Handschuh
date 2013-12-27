@@ -1,0 +1,22 @@
+\select@language {ngerman}
+\contentsline {part}{I\hspace {1em}Einf\IeC {\"u}hrung}{5}{part.1}
+\contentsline {chapter}{\numberline {1}Vorwort}{7}{chapter.1}
+\contentsline {chapter}{\numberline {2}Abstrakt}{9}{chapter.2}
+\contentsline {part}{II\hspace {1em}Hardware}{11}{part.2}
+\contentsline {chapter}{\numberline {3}\IeC {\"U}bersicht der Hardware}{13}{chapter.3}
+\contentsline {chapter}{\numberline {4}Einzelne Teile der Hardware}{15}{chapter.4}
+\contentsline {section}{\numberline {4.1}Aufnahme der Messdaten}{15}{section.4.1}
+\contentsline {section}{\numberline {4.2}Beschaltung und Wechsel}{15}{section.4.2}
+\contentsline {section}{\numberline {4.3}AD-Wandler}{16}{section.4.3}
+\contentsline {part}{III\hspace {1em}Software}{19}{part.3}
+\contentsline {chapter}{\numberline {5}\IeC {\"U}bersicht}{21}{chapter.5}
+\contentsline {chapter}{\numberline {6}Datenaufnahme}{23}{chapter.6}
+\contentsline {section}{\numberline {6.1}Serielle Schnittstellen unter Linux}{23}{section.6.1}
+\contentsline {section}{\numberline {6.2}Datensammlungsmethode}{23}{section.6.2}
+\contentsline {chapter}{\numberline {7}Neuronale Netze}{25}{chapter.7}
+\contentsline {section}{\numberline {7.1}Einf\IeC {\"u}hrung in Neuronale Netze}{25}{section.7.1}
+\contentsline {section}{\numberline {7.2}Verwendetes Neuronales Netz}{25}{section.7.2}
+\contentsline {section}{\numberline {7.3}Umsetzung}{25}{section.7.3}
+\contentsline {part}{IV\hspace {1em}Erfolge und Probleme}{27}{part.4}
+\contentsline {part}{V\hspace {1em}Abschluss}{29}{part.5}
+\contentsline {chapter}{Index}{31}{section*.2}

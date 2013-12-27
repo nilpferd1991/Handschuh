@@ -1,0 +1,6 @@
+HEADER = header
+CC = g++
+COPTIONS = -O2 -lncurses
+CLIBOPTIONS = -c
+LIBRARIES = lib
+LIB = console rsconnect

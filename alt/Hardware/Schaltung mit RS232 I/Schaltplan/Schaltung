@@ -1,0 +1,32 @@
+Verkabelung:
+
+	Serielle Schnittstelle Computer
+		<=> RS-232-Kabel <=>
+	Serielle Schnittstelle Hardware
+		<=> Verdrahtung <=>
+	AD-Wandler 
+	Multiplexer
+	Counter
+		<=> Federleisten <=>
+	Sensoren
+
+
+Packaging:
+
+	Gehäuse (Papier? auf EURO-Streifenrasterplatte)
+	> Serielle Schnittstelle Hardware
+	> AD-Wandler
+	> Multiplexer
+	> Counter
+
+	Verkabelung geschützt?
+
+	Geätzte Platine (mit Schutz? Schrumpfband / Heißluftkleber?)
+	> Sensoren
+	
+	Handschuh (Leinenhandschuh wie Schauspieler? Arbeitshandschuh?)
+	
+
+Zu besorgen:
+	
+	3 Federleiten + passende Steckverbindungen

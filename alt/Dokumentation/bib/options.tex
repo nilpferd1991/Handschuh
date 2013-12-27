@@ -1,0 +1,56 @@
+% documentclass
+	\documentclass[titlepage, a4paper, makeidx]{book}
+
+% packages
+	\usepackage[utf8]{inputenc} %setzt umlaute um
+	\usepackage[english, german, ngerman]{babel}
+	\usepackage[T1]{fontenc}
+	\usepackage{graphicx}
+	\usepackage{subfigure}	%mehrere Bilder in figure nebeneinander OHNE minipage^^	
+	\usepackage{booktabs}
+	\usepackage{makeidx}	%index erstellen
+
+	\usepackage{amsmath}
+	\usepackage{amssymb}
+	\usepackage{amsthm}
+	\usepackage{amsfonts}
+
+	\usepackage{pdfsync}
+	\usepackage{fancyhdr} 
+	\usepackage{color}
+	\usepackage{multicol}
+	\usepackage{multirow}
+	\usepackage{a4wide}
+	\usepackage{expdlist}
+	\usepackage{setspace}
+	\usepackage{longtable}
+%	\usepackage{tabularx} %tabellenbreite	
+	\usepackage{supertabular}
+	\usepackage{expdlist}
+	\usepackage{pbox}
+
+% Titelseite
+	\title{Datenhandschuh}
+	\author{Dokumentation eines Projektes}
+	\date{\dates}
+	
+% makros
+	\newcommand{\makepages}{\maketitle\tableofcontents\newpage}
+
+%tables
+	\renewcommand{\arraystretch}{1.5} 
+	\renewcommand{\tabcolsep}{0.2cm} 
+	
+%links
+	\usepackage[]{hyperref}
+	\hypersetup{
+		colorlinks,
+		citecolor=black,
+		filecolor=black,
+		linkcolor=black,
+		urlcolor=black, 
+		unicode
+		}
+%index
+	\makeindex
+

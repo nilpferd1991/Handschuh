@@ -1,0 +1,37 @@
+Vcc	I4-14 
+unnamed_net28	Co1-14 Co1-11 
+unnamed_net27	R62-1 R63-2 
+unnamed_net26	TLC-2 D1-1 R1-2 
+unnamed_net25	R61-2 Z6-2 R6-1 
+unnamed_net24	TLC-5 D5-1 R5-1 
+unnamed_net23	RS232-1 R5-2 
+unnamed_net22	TLC-6 D4-1 R4-1 
+DATA	RS232-4 R4-2 
+CLK	Co1-10 TLC-7 D3-1 R3-1 
+CLKm	RS232-2 R3-2 
+VCC	RS232-8 R6-2 R2-2 
+unnamed_net21	I4-2 M2-6 
+VEE	M2-7 M1-7 
+VDD	Co1-16 TLC-8 D2-1 C2-2 R2-1 M2-16 M1-16 
+unnamed_net20	I4-1 Co1-12 M1-6 
+unnamed_net19	R1-1 M2-3 M1-3 
+unnamed_net18	M2-9 Co1-13 M1-9 
+unnamed_net17	M2-10 Co1-6 M1-10 
+unnamed_net16	M2-11 Co1-4 M1-11 
+unnamed_net15	M2-2 S5-3 
+unnamed_net14	M2-5 S5-2 
+unnamed_net13	M2-1 S5-1 
+unnamed_net12	M2-12 S4-3 
+unnamed_net11	M2-15 S4-2 
+unnamed_net10	M2-14 S4-1 
+unnamed_net9	M2-13 S3-3 
+unnamed_net8	M1-4 S3-2 
+unnamed_net7	M1-2 S3-1 
+unnamed_net6	M1-5 S2-3 
+unnamed_net5	M1-1 S2-2 
+unnamed_net4	M1-12 S2-1 
+VSS	I4-7 Co1-8 M2-8 M1-8 D1-2 D2-2 D3-2 D4-2 D5-2 R63-1 Z6-1 C6-1 C2-1 RS232-5 TLC-4 TLC-3 S5-6 S4-6 S3-6 S2-6 S4-5 S3-5 S2-5 S5-5 S1-5 S1-6 
+VCCm	TLC-1 C6-2 R61-1 R62-2 S5-8 S4-8 S3-8 S2-8 S1-8 
+unnamed_net3	M1-15 S1-3 
+unnamed_net2	M1-14 S1-2 
+unnamed_net1	M1-13 S1-1 

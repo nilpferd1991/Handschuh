@@ -1,0 +1,195 @@
+% environments
+	\newenvironment	{Auflistung}[2]
+			{
+			\begin{description}[\breaklabel\setleftmargin{#1}#2]
+	                }
+	                {
+	                	\end{description}
+	                }
+	                
+	\newenvironment	{AListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	(\Alph{enumi})}
+	                		\renewcommand{\labelenumii}{	(\Alph{enumii})}
+	                		\renewcommand{\labelenumiii}{	(\Alph{enumiii})}
+	                		\renewcommand{\labelenumiv}{	(\Alph{enumiv})}
+	                }
+	                {
+	                	\end{enumerate}
+	                }
+	                
+	\newenvironment	{aListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	(\alph{enumi})}
+	                		\renewcommand{\labelenumii}{	(\alph{enumii})}
+	                		\renewcommand{\labelenumiii}	{(\alph{enumiii})}
+	                		\renewcommand{\labelenumiv}{	(\alph{enumiv})}
+	                }
+	                {
+	                	\end{enumerate}
+	                }
+	                
+	\newenvironment	{nListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	(\arabic{enumi})}
+	                		\renewcommand{\labelenumii}{	(\arabic{enumii})}
+	                		\renewcommand{\labelenumiii}{	(\arabic{enumiii})}
+	                		\renewcommand{\labelenumiv}{	(\arabic{enumiv})}
+	                }
+	                {
+	                	\end{enumerate}
+	                }
+	                
+	\newenvironment	{NListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	\arabic{enumi}.}
+	                		\renewcommand{\labelenumii}{	\arabic{enumii}.}
+	                		\renewcommand{\labelenumiii}{	\arabic{enumiii}.}
+	                		\renewcommand{\labelenumiv}{	\arabic{enumiv}.}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	   
+	                
+	\newenvironment	{NNListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	\arabic{enumi}.}
+	                		\renewcommand{\labelenumii}{	\arabic{enumi}.\arabic{enumii}.}
+	                		\renewcommand{\labelenumiii}{	\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.}
+	                		\renewcommand{\labelenumiv}{	\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv}.}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	      
+	                
+	\newenvironment	{NnListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	\arabic{enumi}}
+	                		\renewcommand{\labelenumii}{	\arabic{enumi}.\arabic{enumii}}
+	                		\renewcommand{\labelenumiii}{	\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}}
+	                		\renewcommand{\labelenumiv}{	\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv}}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	 	                          
+	                
+	\newenvironment	{iListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	(\roman{enumi})}
+	                		\renewcommand{\labelenumii}{	(\roman{enumii})}
+	                		\renewcommand{\labelenumiii}{	(\roman{enumiii})}
+	                		\renewcommand{\labelenumiv}{	(\roman{enumiv})}
+	                }
+	                {
+	                	\end{enumerate}
+	                }
+	                
+	\newenvironment	{IListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	\Roman{enumi}.}
+	                		\renewcommand{\labelenumii}{	\Roman{enumii}.}
+	                		\renewcommand{\labelenumiii}{	\Roman{enumiii}.}
+	                		\renewcommand{\labelenumiv}{	\Roman{enumiv}.}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	                	                             
+	                	                
+	\newenvironment	{SListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{		-}
+	                		\renewcommand{\labelenumii}{	-}
+	                		\renewcommand{\labelenumiii}{	-}
+	                		\renewcommand{\labelenumiv}{	-}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	    
+	                
+	\newenvironment	{DListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	$\bullet$}
+	                		\renewcommand{\labelenumii}{	$\bullet$}
+	                		\renewcommand{\labelenumiii}{	$\bullet$}
+	                		\renewcommand{\labelenumiv}{	$\bullet$}
+	                }
+	                {
+	                	\end{enumerate}
+	                }		  
+	                
+	\newenvironment	{CListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{	$\circ$}
+	                		\renewcommand{\labelenumii}{	$\circ$}
+	                		\renewcommand{\labelenumiii}{	$\circ$}
+	                		\renewcommand{\labelenumiv}{	$\circ$}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	               
+	     
+	     	\newenvironment	{oListe}
+									{
+	                	\begin{enumerate}
+	                		\renewcommand{\labelenumi}{		$$}
+	                		\renewcommand{\labelenumii}{	$$}
+	                		\renewcommand{\labelenumiii}{	$$}
+	                		\renewcommand{\labelenumiv}{	$$}
+	                }
+	                {
+	                	\end{enumerate}
+	                }	               
+	                
+	                              	                
+	\newenvironment	{3Tabelle}
+									{
+										%\\\vspace{-2.6\baselineskip}\\
+										\begin{center}
+											\begin{tabular}{rcl}
+									}
+									{
+											\end{tabular}
+										\end{center}
+	
+									}
+																		
+	\newenvironment	{2Tabelle}
+									{
+										\\\vspace{-2.6\baselineskip}\\
+										\begin{center}
+											\begin{tabular}{ll}
+									}
+									{
+											\end{tabular}
+										\end{center}
+	
+									}									
+									
+	\newcommand{\tableheader}[2]{$\text{#1}$&$\text{}$&$\text{#2}$\\\hline}
+										
+	\newcommand{\contrasting}[2]{$\text{#1}$&$\Leftrightarrow$&$\text{#2}$\\}
+	
+								
+											
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\W}{\measuredangle}
+\newcommand{\Ra}{\Rightarrow}
+\newcommand{\Lra}{\Leftrightarrow}
+\newcommand{\ra}{\rightarrow}
+
+\newcommand{\rAbb}[1]{(Abb. \textbf{\ref{#1}})}
+\newcommand{\rTab}[1]{(Tabelle \textbf{\ref{#1}})}
+
+\newcommand{\partno}[1]{\textit{#1}}
