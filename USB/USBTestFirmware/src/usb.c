@@ -58,6 +58,38 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	// Gebe die Sensordaten an den Host zurück
 	else if(request->bRequest == CUSTOM_RQ_DATA)
 	{
+
+		// TWI START
+		// Write: Read-Offset ab Adresse 02h (Daten)
+		if (!TW_SendStart() || !TW_SendAdress(SLA_W) || !TW_SendData(0x02) ) {
+			// ERROR
+			return 1;
+		}
+
+		// Read: Daten ab jetzt
+		if (!TW_SendStart() || !TW_SendAdress(SLA_R)) {
+			// ERROR
+			return 1;
+		}
+
+		// 5 Datensätze lesen, nach dem 6. abbrechen
+		for(int i = 0; i < 5; i++) {
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
+			// Auf Daten warten (TWINT muss wieder gesetzt sein)
+			while (!(TWCR & (1<<TWINT)));
+			sensorData[counter++] = TWDR;
+		}
+
+		// NACK
+		TWCR = (1 << TWINT) | (1 << TWEN);
+		// Auf Daten warten (TWINT muss wieder gesetzt sein)
+		while (!(TWCR & (1<<TWINT)));
+		sensorData[counter++] = TWDR;
+
+		TW_SendStop();
+
+		counter = 0;
+
 		usbMsgPtr = (uchar*)sensorData;
 		// Datenformat: [Sensordaten]*BUFFER_SIZE
 		return CUSTOM_RQ_DATA_LEN;

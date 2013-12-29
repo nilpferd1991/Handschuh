@@ -43,7 +43,7 @@ int main(void)
 	{
 		wdt_reset();
 
-		getData();
+//		getData();
 
 		// Auf Nachricht warten
 		usbPoll();
