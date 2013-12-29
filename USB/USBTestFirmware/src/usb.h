@@ -16,6 +16,7 @@
 
 #include "certificate.h"
 #include "usbdrv/usbdrv.h"
+#include "TWI.h"
 
 // Trennt den Handschuh absichtlich vom Host für ca. 250 ms und startet eine Reenumeration.
 // Nach jedem Reset sollte eine Reenumerartion durchgeführt werden

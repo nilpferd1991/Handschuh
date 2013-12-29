@@ -19,15 +19,11 @@ void usbForceDisconnect()
 	usbDeviceDisconnect();
 
 	// Ca. 250 ms warten
-	uchar i = 0;
-	while(--i)
-	{
-		wdt_reset();
-		_delay_ms(1);
-	}
+	_delay_ms(300);
 
 	// Wieder anmelden und Interrupts anschalten
 	usbDeviceConnect();
+
 	sei();
 
 	counter = 0;
@@ -62,7 +58,7 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	// Gebe die Sensordaten an den Host zurück
 	else if(request->bRequest == CUSTOM_RQ_DATA)
 	{
-		usbMsgPtr = sensorData;
+		usbMsgPtr = (uchar*)sensorData;
 		// Datenformat: [Sensordaten]*BUFFER_SIZE
 		return CUSTOM_RQ_DATA_LEN;
 	}
