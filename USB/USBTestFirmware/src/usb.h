@@ -18,6 +18,7 @@
 #include "usbdrv/usbdrv.h"
 #include "TWI.h"
 
+
 // Trennt den Handschuh absichtlich vom Host für ca. 250 ms und startet eine Reenumeration.
 // Nach jedem Reset sollte eine Reenumerartion durchgeführt werden
 void usbForceDisconnect();
@@ -31,6 +32,6 @@ void usbForceDisconnect();
 extern uint8_t sensorData[BUFFER_SIZE];
 
 // Counter zum Durchzählen der Sensordaten
-extern uint8_t counter;
+extern volatile uint8_t counter;
 
 #endif /* USB_H_ */
