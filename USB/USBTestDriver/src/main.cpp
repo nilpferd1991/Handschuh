@@ -20,19 +20,6 @@ int main(int argc, char **argv)
 	// USB-Schnittstelle initialisieren und mit Handschuh verbinden
 	usbInit();
 
-//	// Echo-Test
-//	buffer = new uint8_t[CUSTOM_RQ_ECHO_LEN];
-//	for(int i = 0; i < 10; i++)
-//	{
-//		usbRead(CUSTOM_RQ_ECHO, i, buffer, CUSTOM_RQ_ECHO_LEN);
-//		printf("Echo erhielt:");
-//		for(int j = 0; j < CUSTOM_RQ_ECHO_LEN; j++)
-//		{
-//			printf("%d ", buffer[j]);
-//		}
-//		printf("\n");
-//	}
-
 	// Data-Test
 	buffer = new uint8_t[CUSTOM_RQ_DATA_LEN];
 

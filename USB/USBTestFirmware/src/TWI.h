@@ -9,8 +9,6 @@
 #define SLA_W 0x70
 #define SLA_R 0x71
 
-int getData();
-
 void twiPoll();
 
 #endif
