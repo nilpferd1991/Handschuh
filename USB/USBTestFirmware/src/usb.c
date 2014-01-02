@@ -60,6 +60,7 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	// Gebe die Sensordaten an den Host zurück
 	else if(request->bRequest == CUSTOM_RQ_DATA)
 	{
+
 		usbMsgPtr = sensorData;
 
 		// Datenformat: [Sensordaten]*BUFFER_SIZE
