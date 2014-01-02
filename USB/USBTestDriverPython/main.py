@@ -12,9 +12,6 @@ BUFFER_SIZE = 32
 CUSTOM_RQ_ECHO = 0
 CUSTOM_RQ_ECHO_LEN = 4
 
-CUSTOM_RQ_DOIT = 2
-CUSTOM_RQ_DOIT_LEN = 1
-
 CUSTOM_RQ_DATA = 1
 CUSTOM_RQ_DATA_LEN = BUFFER_SIZE
 
@@ -38,7 +35,6 @@ def catchData(device):
     # requestType: USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN
     # requestCode: 
         
-    device.ctrl_transfer(0xC0, CUSTOM_RQ_DOIT, 0, 0, CUSTOM_RQ_DOIT_LEN)
     sensorData = device.ctrl_transfer(0xC0, CUSTOM_RQ_DATA, 0, 0, CUSTOM_RQ_DATA_LEN)
     
     x = ctypes.c_int8(sensorData[1]).value << 2 | ctypes.c_int8(sensorData[0] >> 6).value;
