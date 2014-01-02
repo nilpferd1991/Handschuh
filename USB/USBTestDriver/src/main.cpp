@@ -12,6 +12,9 @@
 #include "certificate.h"
 #include "usb.h"
 
+int counter = 0;
+int started = 0;
+
 int main(int argc, char **argv)
 {
 	// Puffer für die Datenverarbeitung
@@ -30,16 +33,28 @@ int main(int argc, char **argv)
 //		}
 //		printf("\n");
 
-
 		int_least16_t x,y,z;
-		x = ((int_least8_t)buffer[1] << 2 | (int_least8_t)(buffer[0] >> 6));
-		y = ((int_least8_t)buffer[3] << 2 | (int_least8_t)(buffer[2] >> 6));
-		z = ((int_least8_t)buffer[5] << 2 | (int_least8_t)(buffer[4] >> 6));
+		x = ((int_least8_t)buffer[1] << 2 | (int_least8_t)(buffer[0] >> 6)) - OFFSET_X;
+		y = ((int_least8_t)buffer[3] << 2 | (int_least8_t)(buffer[2] >> 6)) - OFFSET_Y;
+		z = ((int_least8_t)buffer[5] << 2 | (int_least8_t)(buffer[4] >> 6)) - OFFSET_Z;
 
-		printf("%d %d %d", x,y,z);
+		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD && z*z < STEADY_STATE_THRESHOLD) {
+			counter++;
+		}
+		else {
+			counter = 0;
+		}
 
+		if(counter > STEADY_STATE_CYCLES) {
+			printf("jetzt\n");
+			started = 1;
+			counter = 0;
+		}
 
-		printf("\n");
+		if(started > 0) {
+			printf("%d\t%d\t%d\n", x,y,z);
+			started++;
+		}
 	}
 
 	usbClose();

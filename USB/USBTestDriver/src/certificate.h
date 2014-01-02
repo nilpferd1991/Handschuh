@@ -29,4 +29,12 @@
 #define CUSTOM_RQ_DATA 				1
 #define CUSTOM_RQ_DATA_LEN			BUFFER_SIZE
 
+// Die Offsets in die verschiedenen Richtungen geben an, wie stark die Normalweinstellung von 0,0,0 verschoben ist.
+#define OFFSET_X 40
+#define OFFSET_Y 0
+#define OFFSET_Z -240
+
+#define STEADY_STATE_THRESHOLD 1000
+#define STEADY_STATE_CYCLES 10
+
 #endif /* CERTIFICATE_H_ */
