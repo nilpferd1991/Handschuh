@@ -13,7 +13,13 @@
 #include "usb.h"
 
 int counter = 0;
-int started = 0;
+int status = 0;
+
+#define STATUS_STARTING 0
+#define STATUS_STEADY_STATE 1
+#define STATUS_AFTER_STEADY_STATE 2
+#define STATUS_NOT_STEADY_STATE 3
+#define STATUS_BEFORE_STEADY_STATE 4
 
 int main(int argc, char **argv)
 {
@@ -27,33 +33,85 @@ int main(int argc, char **argv)
 	buffer = new uint8_t[CUSTOM_RQ_DATA_LEN];
 
 	for(;;) {
-		usbRead(CUSTOM_RQ_DATA, 0, buffer, CUSTOM_RQ_DATA_LEN);
-//		for(int i = 0; i < CUSTOM_RQ_DATA_LEN; i++) {
-//			printf(" %x ", buffer[i]);
-//		}
-//		printf("\n");
 
 		int_least16_t x,y,z;
-		x = ((int_least8_t)buffer[1] << 2 | (int_least8_t)(buffer[0] >> 6)) - OFFSET_X;
-		y = ((int_least8_t)buffer[3] << 2 | (int_least8_t)(buffer[2] >> 6)) - OFFSET_Y;
-		z = ((int_least8_t)buffer[5] << 2 | (int_least8_t)(buffer[4] >> 6)) - OFFSET_Z;
 
-		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD && z*z < STEADY_STATE_THRESHOLD) {
-			counter++;
-		}
-		else {
-			counter = 0;
-		}
+		for(int i = 0; i < 5; i++) {
+			usbRead(CUSTOM_RQ_DATA, 0, buffer, CUSTOM_RQ_DATA_LEN);
 
-		if(counter > STEADY_STATE_CYCLES) {
-			printf("jetzt\n");
-			started = 1;
-			counter = 0;
+			x += ((int_least8_t)buffer[1] << 2 | (int_least8_t)(buffer[0] >> 6)) - OFFSET_X;
+			y += ((int_least8_t)buffer[3] << 2 | (int_least8_t)(buffer[2] >> 6)) - OFFSET_Y;
+			z += ((int_least8_t)buffer[5] << 2 | (int_least8_t)(buffer[4] >> 6)) - OFFSET_Z;
+
 		}
 
-		if(started > 0) {
+		x /= 5;
+		y /= 5;
+		z /= 5;
+
+		switch(status) {
+		// Gerade gestartet oder in normalen Modus
+		case STATUS_STARTING:
+			// Sind wir im Steady-State?
+			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+					z*z < STEADY_STATE_THRESHOLD) {
+				status = STATUS_STEADY_STATE;
+				counter = 0;
+				printf("Beginn Steady-State\n");
+			}
+			break;
+		// Gerade im Steady-State
+		case STATUS_STEADY_STATE:
+			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+					z*z < STEADY_STATE_THRESHOLD) {
+				counter++;
+			}
+
+			// Sind wir lange genug im Steady-State geblieben?
+			if(counter > STEADY_STATE_CYCLES) {
+				status = STATUS_AFTER_STEADY_STATE;
+				counter = 0;
+			}
+			break;
+		// Nach dem Steady-State
+		case STATUS_AFTER_STEADY_STATE:
+			if(!(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+					z*z < STEADY_STATE_THRESHOLD)) {
+				status = STATUS_NOT_STEADY_STATE;
+				printf("End Steady-State\n");
+			}
+			break;
+		// Nach Steady-State mit Bewegung
+		case STATUS_NOT_STEADY_STATE:
 			printf("%d\t%d\t%d\n", x,y,z);
-			started++;
+
+			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+					z*z < STEADY_STATE_THRESHOLD) {
+				status = STATUS_BEFORE_STEADY_STATE;
+				counter = 0;
+
+			}
+			break;
+		case STATUS_BEFORE_STEADY_STATE:
+			printf("%d\t%d\t%d\n", x,y,z);
+			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+					z*z < STEADY_STATE_THRESHOLD) {
+				counter++;
+			}
+			else {
+				status = STATUS_NOT_STEADY_STATE;
+				break;
+			}
+
+			// Sind wir lange genug im Steady-State geblieben?
+			if(counter > 3*STEADY_STATE_CYCLES) {
+				status = STATUS_STEADY_STATE;
+				printf("SteadyState recognized\n");
+				counter = 0;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
