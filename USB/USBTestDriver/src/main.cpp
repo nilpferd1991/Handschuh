@@ -32,6 +32,9 @@ int main(int argc, char **argv)
 	// Data-Test
 	buffer = new uint8_t[CUSTOM_RQ_DATA_LEN];
 
+	// Startnachricht
+	printf("Bitte begeben Sie sich in Ausgangsstellung.\n");
+
 	for(;;) {
 
 		int_least16_t x,y,z;
@@ -49,15 +52,16 @@ int main(int argc, char **argv)
 		y /= 5;
 		z /= 5;
 
+
 		switch(status) {
-		// Gerade gestartet oder in normalen Modus
+		// Gerade gestartet
 		case STATUS_STARTING:
 			// Sind wir im Steady-State?
 			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
 					z*z < STEADY_STATE_THRESHOLD) {
 				status = STATUS_STEADY_STATE;
 				counter = 0;
-				printf("Beginn Steady-State\n");
+				printf("Anfangsstellung halten...\n");
 			}
 			break;
 		// Gerade im Steady-State
@@ -71,6 +75,7 @@ int main(int argc, char **argv)
 			if(counter > STEADY_STATE_CYCLES) {
 				status = STATUS_AFTER_STEADY_STATE;
 				counter = 0;
+				printf("Anfangsstellung erkannt. Jetzt können Bewegungen ausgeführt werden.\n");
 			}
 			break;
 		// Nach dem Steady-State
@@ -78,35 +83,35 @@ int main(int argc, char **argv)
 			if(!(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
 					z*z < STEADY_STATE_THRESHOLD)) {
 				status = STATUS_NOT_STEADY_STATE;
-				printf("End Steady-State\n");
+				printf("Bewegung erkannt.\n");
 			}
 			break;
 		// Nach Steady-State mit Bewegung
 		case STATUS_NOT_STEADY_STATE:
-			printf("%d\t%d\t%d\n", x,y,z);
 
 			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
 					z*z < STEADY_STATE_THRESHOLD) {
 				status = STATUS_BEFORE_STEADY_STATE;
 				counter = 0;
-
+				printf("Schon fertig mit der Bewegung?\n");
 			}
 			break;
 		case STATUS_BEFORE_STEADY_STATE:
-			printf("%d\t%d\t%d\n", x,y,z);
+
 			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
 					z*z < STEADY_STATE_THRESHOLD) {
 				counter++;
 			}
 			else {
+				printf("Nein.\n");
 				status = STATUS_NOT_STEADY_STATE;
 				break;
 			}
 
 			// Sind wir lange genug im Steady-State geblieben?
-			if(counter > 3*STEADY_STATE_CYCLES) {
-				status = STATUS_STEADY_STATE;
-				printf("SteadyState recognized\n");
+			if(counter > STEADY_STATE_CYCLES) {
+				status = STATUS_AFTER_STEADY_STATE;
+				printf("Ja.\n");
 				counter = 0;
 			}
 			break;
