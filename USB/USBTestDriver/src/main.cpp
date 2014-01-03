@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
 		int_least16_t x,y,z;
 
-		for(int i = 0; i < 5; i++) {
+		for(int i = 0; i < MEASURE_CYCLES; i++) {
 			usbRead(CUSTOM_RQ_DATA, 0, buffer, CUSTOM_RQ_DATA_LEN);
 
 			x += ((int_least8_t)buffer[1] << 2 | (int_least8_t)(buffer[0] >> 6)) - OFFSET_X;
@@ -48,9 +48,9 @@ int main(int argc, char **argv)
 
 		}
 
-		x /= 5;
-		y /= 5;
-		z /= 5;
+		x /= MEASURE_CYCLES;
+		y /= MEASURE_CYCLES;
+		z /= MEASURE_CYCLES;
 
 
 		switch(status) {
