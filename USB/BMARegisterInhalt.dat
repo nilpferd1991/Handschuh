@@ -1,0 +1,23 @@
+Ab Register 0
+2  	=> chip_id = b10 = 2
+18  	=> al_version = 1, ml_version = 10b = 2
+193  	=> data
+61  	=> data
+1  	=> data
+244  	=> data
+1  	=> data
+20  	=> data
+210  	=> unsused
+0  	=> status
+0  	=> control
+0  	=> control
+72  	= LG_Threshold
+78  	= LG_dur
+48  	= HG_thres
+75  	= HG_dur
+77  	= any_motion_thres
+7  	=> any_motion_dur = 0, HG_hyst = 1, LG_hyst = 3
+44  	= customer_reserved
+35  	= customer_reserved
+128  	=> range = 0 = +-2g, bandwidth = 0 = 25 Hz
+128 	=> SPI4 = 1, enable_adv_INT = new_data_INT = latch_INT = schadow_dis = wake_up_pause = wake_up = 0
