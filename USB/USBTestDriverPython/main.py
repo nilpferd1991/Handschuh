@@ -15,6 +15,10 @@ CUSTOM_RQ_ECHO_LEN = 4
 CUSTOM_RQ_DATA = 1
 CUSTOM_RQ_DATA_LEN = BUFFER_SIZE
 
+OFFSET_X = 40
+OFFSET_Y = 0
+OFFSET_Z = -240
+
 
 #########################################################################
 def initUSB():
@@ -41,7 +45,7 @@ def catchData(device):
     y = ctypes.c_int8(sensorData[3]).value << 2 | ctypes.c_int8(sensorData[2] >> 6).value;
     z = ctypes.c_int8(sensorData[5]).value << 2 | ctypes.c_int8(sensorData[4] >> 6).value;
     
-    return (x, y, z)
+    return (x - OFFSET_X, y - OFFSET_Y, z - OFFSET_Z)
 
 ##########################################################################
 
