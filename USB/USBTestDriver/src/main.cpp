@@ -166,10 +166,8 @@ int main(int argc, char **argv)
 
 		// User hat eine Taste gedrückt
 		if ((key = getch()) != ERR) {
-			usbClose();
 
-			endwin();
-			return 0;
+			break;
 		}
 
 		// Daten abrufen
