@@ -27,6 +27,117 @@ int status = 0;
 #define min(x,y) (x > y ? y : x)
 #define max(x,y) (x < y ? y : x)
 
+void setStatus(int_least16_t x, int_least16_t y, int_least16_t z) {
+
+	// Daten zeichnen
+	move( 10, 0);
+	clrtoeol();
+	printw("%d %d %d", x, y, z);
+
+	move( 11, 0); clrtoeol();
+	move( 12, 0); clrtoeol();
+	move( 13, 0); clrtoeol();
+
+	int maxx = getmaxx(stdscr);
+	int maxy = getmaxy(stdscr);
+
+	for(int i = 0; i < maxx; i++) {
+		if(i > min(maxx/2, x/10 + maxx/2) && i < max(maxx/2, x/10 + maxx/2)) {
+			move( 11, i);
+			addch('x');
+		}
+		if(i > min(maxx/2, y/10 + maxx/2) && i < max(maxx/2, y/10 + maxx/2)) {
+			move( 12, i);
+			addch('y');
+		}
+		if(i > min(maxx/2, z/10 + maxx/2) && i < max(maxx/2, z/10 + maxx/2)) {
+			move( 13, i);
+			addch('z');
+		}
+	}
+
+	// Schrift ausgeben
+
+	move(4,0);
+	printw("state zero: false\n");
+
+	move(3,0);
+	switch(status) {
+	// Gerade gestartet
+	case STATUS_STARTING:
+		move(4,0);
+		printw("state zero: maybe\n");
+		// Sind wir im Steady-State?
+		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+				z*z < STEADY_STATE_THRESHOLD) {
+			status = STATUS_STEADY_STATE;
+			counter = 0;
+		}
+		break;
+	// Gerade im Steady-State
+	case STATUS_STEADY_STATE:
+		move(4,0);
+		printw("state zero: maybe\n");
+
+		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+				z*z < STEADY_STATE_THRESHOLD) {
+			counter++;
+		}
+
+		// Sind wir lange genug im Steady-State geblieben?
+		if(counter > STEADY_STATE_CYCLES) {
+			status = STATUS_AFTER_STEADY_STATE;
+			counter = 0;
+		}
+		break;
+	// Nach dem Steady-State
+	case STATUS_AFTER_STEADY_STATE:
+		move(4,0);
+		printw("state zero: true\n");
+
+		if(!(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+				z*z < STEADY_STATE_THRESHOLD)) {
+			status = STATUS_NOT_STEADY_STATE;
+		}
+		break;
+	// Nach Steady-State mit Bewegung
+	case STATUS_NOT_STEADY_STATE:
+		move(4,0);
+		printw("state zero: false\n");
+
+		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+				z*z < STEADY_STATE_THRESHOLD) {
+			status = STATUS_BEFORE_STEADY_STATE;
+			counter = 0;
+		}
+		break;
+	case STATUS_BEFORE_STEADY_STATE:
+
+		move(4,0);
+		printw("state zero: maybe\n");
+
+		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
+				z*z < STEADY_STATE_THRESHOLD) {
+			counter++;
+		}
+		else {
+			status = STATUS_NOT_STEADY_STATE;
+			break;
+		}
+
+		// Sind wir lange genug im Steady-State geblieben?
+		if(counter > STEADY_STATE_CYCLES) {
+			status = STATUS_AFTER_STEADY_STATE;
+			counter = 0;
+		}
+		break;
+	default:
+		break;
+	}
+
+	refresh();
+}
+
 int main(int argc, char **argv)
 {
 	// Puffer für die Datenverarbeitung
@@ -50,8 +161,6 @@ int main(int argc, char **argv)
 	refresh();
 
 	int key;
-	int maxx = getmaxx(stdscr);
-	int maxy = getmaxy(stdscr);
 
 	for(;;) {
 
@@ -79,111 +188,8 @@ int main(int argc, char **argv)
 		y /= MEASURE_CYCLES;
 		z /= MEASURE_CYCLES;
 
-		// Daten zeichnen
-		move( 10, 0);
-		clrtoeol();
-		printw("%d %d %d", x, y, z);
+		setStatus(x,y,z);
 
-		move( 11, 0); clrtoeol();
-		move( 12, 0); clrtoeol();
-		move( 13, 0); clrtoeol();
-
-		for(int i = 0; i < maxx; i++) {
-			if(i > min(maxx/2, x/10 + maxx/2) && i < max(maxx/2, x/10 + maxx/2)) {
-				move( 11, i);
-				addch('x');
-			}
-			if(i > min(maxx/2, y/10 + maxx/2) && i < max(maxx/2, y/10 + maxx/2)) {
-				move( 12, i);
-				addch('y');
-			}
-			if(i > min(maxx/2, z/10 + maxx/2) && i < max(maxx/2, z/10 + maxx/2)) {
-				move( 13, i);
-				addch('z');
-			}
-		}
-
-
-		// Schrift ausgeben
-
-		move(4,0);
-		printw("state zero: false\n");
-
-		move(3,0);
-		switch(status) {
-		// Gerade gestartet
-		case STATUS_STARTING:
-			move(4,0);
-			printw("state zero: maybe\n");
-			// Sind wir im Steady-State?
-			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-					z*z < STEADY_STATE_THRESHOLD) {
-				status = STATUS_STEADY_STATE;
-				counter = 0;
-			}
-			break;
-		// Gerade im Steady-State
-		case STATUS_STEADY_STATE:
-			move(4,0);
-			printw("state zero: maybe\n");
-
-			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-					z*z < STEADY_STATE_THRESHOLD) {
-				counter++;
-			}
-
-			// Sind wir lange genug im Steady-State geblieben?
-			if(counter > STEADY_STATE_CYCLES) {
-				status = STATUS_AFTER_STEADY_STATE;
-				counter = 0;
-			}
-			break;
-		// Nach dem Steady-State
-		case STATUS_AFTER_STEADY_STATE:
-			move(4,0);
-			printw("state zero: true\n");
-
-			if(!(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-					z*z < STEADY_STATE_THRESHOLD)) {
-				status = STATUS_NOT_STEADY_STATE;
-			}
-			break;
-		// Nach Steady-State mit Bewegung
-		case STATUS_NOT_STEADY_STATE:
-			move(4,0);
-			printw("state zero: false\n");
-
-			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-					z*z < STEADY_STATE_THRESHOLD) {
-				status = STATUS_BEFORE_STEADY_STATE;
-				counter = 0;
-			}
-			break;
-		case STATUS_BEFORE_STEADY_STATE:
-
-			move(4,0);
-			printw("state zero: maybe\n");
-
-			if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-					z*z < STEADY_STATE_THRESHOLD) {
-				counter++;
-			}
-			else {
-				status = STATUS_NOT_STEADY_STATE;
-				break;
-			}
-
-			// Sind wir lange genug im Steady-State geblieben?
-			if(counter > STEADY_STATE_CYCLES) {
-				status = STATUS_AFTER_STEADY_STATE;
-				counter = 0;
-			}
-			break;
-		default:
-			break;
-		}
-
-		refresh();
 	}
 
 	usbClose();
