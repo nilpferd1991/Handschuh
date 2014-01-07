@@ -12,7 +12,7 @@
 
 // Buffer-Größe eines Buffers in unsigned char abgespeichert
 // Größe ist in Byte angegeben
-#define BUFFER_SIZE 32
+#define BUFFER_SIZE 16
 
 // Das Echo-Kommande sendet eine 2-Byte-Nachricht zurück, die aus dem Value (2 Bytes) besteht.
 // Es dient zum Test der Verbindung.
