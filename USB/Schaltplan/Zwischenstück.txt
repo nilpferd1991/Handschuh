@@ -1,0 +1,9 @@
+Beschreibung des Zwischenstücks zwischen Sensorboard und Microcontroller. 
+
+Die Zahlen beziehen sich auf die Numerierung der 5 Anschlüsse von oben nach unten. Rechts liegt dabei der Anschluss zum Micocontroller, links die 2-m-Kabel zum Sensor.
+
+1 ENB - grünes Kabel - im Momnt leer
+2 SCK - gelbes Kabel - auf PC0 = SCL = SCK
+3 SDI - oranges Kabel - auf PC1 = SDA
+4 UIN - rotes Kabel - auf VCC. Intern auch CSB und UPULL
+5 GND - braunes Kabel - auf GND. Intern auch auf SD0 und anderes GND
