@@ -15,44 +15,53 @@ CUSTOM_RQ_ECHO_LEN = 4
 CUSTOM_RQ_DATA = 1
 CUSTOM_RQ_DATA_LEN = BUFFER_SIZE
 
+CUSTOM_RQ_LOG = 3
+CUSTOM_RQ_LOG_LEN = BUFFER_SIZE
+
 OFFSET_X = 40
 OFFSET_Y = 0
 OFFSET_Z = -240
 
 
 #########################################################################
-def initUSB():
-    # Device suchen (nach Vendor- und Product-ID)
-    device = usb.core.find(idVendor=0x16c0, idProduct=0x05dc)
-    
-    # Gefunden?
-    if device is None:
-        raise ValueError('Device not found')
-    
-    # set the active configuration. With no arguments, the first
-    # configuration will be the active one
-    device.set_configuration()
-    
-    return device
+class USB:
+    def __init__(self):
+        # Device suchen (nach Vendor- und Product-ID)
+        self.device = usb.core.find(idVendor=0x16c0, idProduct=0x05dc)
 
-def catchData(device):
-    # requestType: USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN
-    # requestCode: 
-        
-    sensorData = device.ctrl_transfer(0xC0, CUSTOM_RQ_DATA, 0, 0, CUSTOM_RQ_DATA_LEN)
-    
-    x = ctypes.c_int8(sensorData[1]).value << 2 | ctypes.c_int8(sensorData[0] >> 6).value;
-    y = ctypes.c_int8(sensorData[3]).value << 2 | ctypes.c_int8(sensorData[2] >> 6).value;
-    z = ctypes.c_int8(sensorData[5]).value << 2 | ctypes.c_int8(sensorData[4] >> 6).value;
-    
-    return (x - OFFSET_X, y - OFFSET_Y, z - OFFSET_Z)
+        # Gefunden?
+        if self.device is None:
+            raise ValueError('Device not found')
+
+        # set the active configuration. With no arguments, the first
+        # configuration will be the active one
+        self.device.set_configuration()
+
+    def catch_data(self):
+        # requestType: USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN
+        # requestCode:
+
+        sensor_data = self.device.ctrl_transfer(0xC0, CUSTOM_RQ_DATA, 0, 0, CUSTOM_RQ_DATA_LEN)
+
+        x = ctypes.c_int8(sensor_data[1]).value << 2 | ctypes.c_int8(sensor_data[0] >> 6).value;
+        y = ctypes.c_int8(sensor_data[3]).value << 2 | ctypes.c_int8(sensor_data[2] >> 6).value;
+        z = ctypes.c_int8(sensor_data[5]).value << 2 | ctypes.c_int8(sensor_data[4] >> 6).value;
+
+        return x - OFFSET_X, y - OFFSET_Y, z - OFFSET_Z
+
+    def catch_log(self):
+        # requestType: USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN
+        # requestCode:
+
+        return self.device.ctrl_transfer(0xC0, CUSTOM_RQ_LOG, 0, 0, CUSTOM_RQ_LOG_LEN)
+
 
 ##########################################################################
 
-def getData(device):
+def getData(usb):
     pos = (0, 0, 0)
     for _ in range(5):
-        pos = [a + b for a, b in zip(pos, catchData(device))]
+        pos = [a + b for a, b in zip(pos, usb.catch_data())]
      
     return [x / 5 for x in pos]
 
@@ -60,7 +69,7 @@ def getData(device):
 ##########################################################################
 # class that holds analog data for N samples
 class AnalogData:
-    # constr
+    # constructor
     def __init__(self, maxLen):
         self.ax = deque([0.0] * maxLen)
         self.ay = deque([0.0] * maxLen)
@@ -85,7 +94,7 @@ class AnalogData:
     
 # plot class
 class AnalogPlot:
-    # constr
+    # constructor
     def __init__(self, analogData):
         # set plot to animated
         plt.ion() 
@@ -102,18 +111,29 @@ class AnalogPlot:
         plt.draw()
 
 if __name__ == '__main__':
-    device = initUSB()
+    usbDevice = USB()
     
-    analogData = AnalogData(100)
-    analogPlot = AnalogPlot(analogData)
-    
-    tcounter = 0
-    
+    #analogData = AnalogData(100)
+    #analogPlot = AnalogPlot(analogData)
+
+    data = list()
+    counter = 0;
+
     while True:
         try:
-            data = getData(device)
-            analogData.add(data)
-            analogPlot.update(analogData)
+            print usbDevice.catch_log()
+
+            for _ in xrange(20):
+                newData = usbDevice.catch_data()
+            if data == newData:
+                print usbDevice.catch_log()
+            else:
+                print counter
+                counter += 1
+
+            data = newData
+            #analogData.add(data)
+            #analogPlot.update(analogData)
         except KeyboardInterrupt:
-            print 'exiting'
+            print('exiting')
             break

@@ -19,14 +19,13 @@
 #define CUSTOM_RQ_ECHO 				0
 #define CUSTOM_RQ_ECHO_LEN 			4
 
-// Das DOIT-Kommande sendet eine 1-Byte-Nachricht zurück, die aus dem momentanen Counter (danach!) besteht.
-// Es dient zum Ausführen des Kommandos.
-#define CUSTOM_RQ_DOIT 				2
-#define CUSTOM_RQ_DOIT_LEN 			1
-
 // Das Data-Kommando fragt die momentanen Daten vom Handschuh ab. Die Antwort ist ein BUFFER_SIZE-Byte-Puffer
 // mit den momentanen Sensordaten
 #define CUSTOM_RQ_DATA 				1
 #define CUSTOM_RQ_DATA_LEN			BUFFER_SIZE
+
+// Das Log-Kommando fragt die momentanen Daten vom Log des TWI-Modls ab. Die Antwort ist ein BUFFER_SIZE-Byte-Puffer
+#define CUSTOM_RQ_LOG 				3
+#define CUSTOM_RQ_LOG_LEN			BUFFER_SIZE
 
 #endif /* CERTIFICATE_H_ */

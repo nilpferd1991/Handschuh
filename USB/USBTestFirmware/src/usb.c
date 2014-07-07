@@ -8,9 +8,9 @@
 
 // Deklaration der externen Daten
 uint8_t sensorData[BUFFER_SIZE];
+uint8_t messageData[BUFFER_SIZE];
 // Puffer mit der Nachricht nach draußen. Sie enthält maximal BUFFER_SIZE Zeichen.
 unsigned char dataBuffer[BUFFER_SIZE];
-volatile uint8_t counter;
 
 
 // Trennt die Verbindung zum Host für ca. 25 ms und meldet sich danach neu an
@@ -26,8 +26,6 @@ void usbForceDisconnect()
 	usbDeviceConnect();
 
 	sei();
-
-	counter = 0;
 }
 
 // Diese Funktion wird immer dann aufgerufen, wenn eine neue Nachricht (vom Host) eintrifft
@@ -64,6 +62,16 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 
 		// Datenformat: [Sensordaten]*BUFFER_SIZE
 		return CUSTOM_RQ_DATA_LEN;
+	}
+	
+	// LOG
+	// Gebe die Logdaten an den Host zurück
+	else if(request->bRequest == CUSTOM_RQ_LOG)
+	{
+		usbMsgPtr = messageData;
+
+		// Datenformat: BUFFER_SIZE
+		return CUSTOM_RQ_LOG_LEN;
 	}
 
 	// Im allgemeinen Fall gibt es diese Nachricht gar nicht. Wir geben deshalb nichts zurück.

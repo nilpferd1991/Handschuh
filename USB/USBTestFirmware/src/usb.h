@@ -31,7 +31,7 @@ void usbForceDisconnect();
 //		Füllung															|| + 96 bit leer = 256 bit = 32 byte
 extern uint8_t sensorData[BUFFER_SIZE];
 
-// Counter zum Durchzählen der Sensordaten
-extern volatile uint8_t counter;
+/// A message buffer to control the loggig of the TWI module
+extern uint8_t messageData[BUFFER_SIZE];
 
 #endif /* USB_H_ */

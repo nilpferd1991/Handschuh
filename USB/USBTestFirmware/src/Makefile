@@ -9,8 +9,8 @@
 
 DEVICE  = atmega16
 F_CPU   = 16000000	# in Hz
-FUSE_L  = # see below for fuse values for particular devices
-FUSE_H  = 
+FUSE_L  = 0x9F# see below for fuse values for particular devices
+FUSE_H  = 0x99
 AVRDUDE = avrdude -c stk500v2 -p $(DEVICE) # edit this line for your programmer
 
 CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0
@@ -144,10 +144,8 @@ clean:
 # file targets:
 
 # Since we don't want to ship the driver multipe times, we copy it into this project:
-usbdrv:
-	cp -r ../../../usbdrv .
 
-main.elf: usbdrv $(OBJECTS)	# usbdrv dependency only needed because we copy it
+main.elf: $(OBJECTS)	# usbdrv dependency only needed because we copy it
 	$(COMPILE) -o main.elf $(OBJECTS)
 
 main.hex: main.elf

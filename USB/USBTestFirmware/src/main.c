@@ -35,7 +35,6 @@ int main(void)
 	DDRC = 0;
 	PORTC = (1 << 0) | (1 << 1);
 
-	counter = 0;
 	// TWI starten
 	TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
 
