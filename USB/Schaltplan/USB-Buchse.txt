@@ -1,0 +1,17 @@
+Gesehen von unten, die Buchse geht nach oben weg.
+Numeriert von oben links nach unten rechts.
+
+D+    GND
+D-    VCC
+
+Gesehen von vorne (die Buchse), also von der Richtung, aus der der Stecker kommt
+D-    VCC
+D+    GND
+
+
+Das von mir gelötete Board zum Anschluss hat die Pins von oben nach unten (Buchse zeigt nach oben):
+GND   -> GND (beide müssen..
+GND   -> GND .. angeschlossen werden)
+VCC (mittig) -> VCC
+D+ (links)   -> PD2
+D- (rechts)  -> PD4
