@@ -8,8 +8,8 @@ uint8_t sensorRead = 0;
 /// Status bit to check for second start (get the data)
 uint8_t status = 0;
 /// Counter for the log buffer
-uint8_t debugCounter = 0;
-/// Counter for counting delays
+uint8_t debugCounter = 3;
+/// Counter for counting delays. Should not be bigger than 10
 uint8_t delayCounter = 0;
 
 /**
@@ -33,9 +33,17 @@ uint8_t delayCounter = 0;
 void twiPoll() {
 
 	delayCounter++;
-	messageData[4] = delayCounter;
+	if (delayCounter > 100) {
+		PORTB = 0;
+	}
+	else
+		PORTB = 0xFF;
+	
+	
 	// Nur etwas tun, falls auch etwas erhalten wurde.
 	if(TWCR & (1 << TWINT)) {
+		delayCounter = 0;
+		messageData[3] = 0;
 		switch (TWSR & 0xF8) {
 		// Start-Befehl angenommen. Nun senden wir die Write-Adresse SLA_W oder
 		// Das 2. Start wurde angenommen. Nun können wir die Read-Adresse SLA_R senden
@@ -43,8 +51,8 @@ void twiPoll() {
 		case TW_START:
 			if(status == 0) {
 				messageData[0] = 1;
+				messageData[1] = 0;
 				messageData[2] = 0;
-				messageData[3] = 0;
 				TWDR = SLA_W;
 				TWCR = (1 << TWINT) | (1 << TWEN);
 			}
@@ -52,8 +60,6 @@ void twiPoll() {
 				TWDR = SLA_R;
 				// hier kommt er noch an
 				messageData[0] = 4;
-				delayCounter = 0;
-				messageData[6] = messageData[6] + 1;
 				TWCR = (1 << TWINT) | (1 << TWEN);
 			}
 			break;
@@ -71,7 +77,7 @@ void twiPoll() {
 			TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWSTO);
 			while(!(TWCR & (1 << TWINT))) ;
 			TWDR = SLA_W;
-			messageData[2] = 1;
+			messageData[1] = 1;
 			TWCR = (1 << TWINT) | (1 << TWEN);
 			break;
 
@@ -93,11 +99,12 @@ void twiPoll() {
 		// Die Read-Adresse wurde nicht angenommen. Wir senden sie noch einmal,
 		// nur diesmal schneller.
 		case TW_MR_SLA_NACK:
-			// hier auch nicht??
+			messageData[6] = 1;
 			TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
 			while(!(TWCR & (1 << TWINT))) ;
+			messageData[2] = 1;
 			TWDR = SLA_R;
-			messageData[3] = 1;
+			
 			TWCR = (1 << TWINT) | (1 << TWEN);
 			break;
 
@@ -117,7 +124,13 @@ void twiPoll() {
 		// fangen neu an!
 		case TW_MR_DATA_NACK:
 			messageData[0] = 7;
-			messageData[1] = messageData[1] + 1;
+			//messageData[1] = messageData[1] + 1;
+			sensorRead = 0;
+			status = 0;
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTA) | (1 << TWSTO);
+			break;
+			
+		case TW_MR_ARB_LOST:
 			sensorRead = 0;
 			status = 0;
 			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTA) | (1 << TWSTO);
@@ -130,8 +143,7 @@ void twiPoll() {
 			sensorRead = 0;
 			status = 0;
 
-			messageData[4] = 1;
-			messageData[5] = TWSR & 0xF8;
+			messageData[3] = TWSR & 0xF8;
 			// Start/Stop senden
 			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTA) | (1 << TWSTO);
 			break;

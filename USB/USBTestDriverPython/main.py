@@ -123,15 +123,6 @@ if __name__ == '__main__':
         try:
             print usbDevice.catch_log()
 
-            for _ in xrange(20):
-                newData = usbDevice.catch_data()
-            if data == newData:
-                print usbDevice.catch_log()
-            else:
-                print counter
-                counter += 1
-
-            data = newData
             #analogData.add(data)
             #analogPlot.update(analogData)
         except KeyboardInterrupt:

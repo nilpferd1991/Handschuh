@@ -31,10 +31,14 @@ int main(void)
 	usbForceDisconnect();
 
 	// I2C initialisieren
-	// PC0, PC1: Eingänge mit Pullup
+	// PC0, PC1: Eingänge mit Pullup = DATEN
 	DDRC = 0;
 	PORTC = (1 << 0) | (1 << 1);
-
+	
+	// VCC-Versorgung für Chip
+	DDRB = 0xFF;
+	PORTB = 0;
+	
 	// TWI starten
 	TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
 
