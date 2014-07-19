@@ -17,17 +17,18 @@
 int counter = 0;
 int status = 0;
 
-#define STATUS_STARTING 0
-#define STATUS_STEADY_STATE 1
-#define STATUS_AFTER_STEADY_STATE 2
-#define STATUS_NOT_STEADY_STATE 3
-#define STATUS_BEFORE_STEADY_STATE 4
+#define OFFSET_X 0
+#define OFFSET_Y 0
+#define OFFSET_Z 0
+#define MEASURE_CYCLES 5
 
+#include <sys/time.h>
+#include <ctime>
 
 #define min(x,y) (x > y ? y : x)
 #define max(x,y) (x < y ? y : x)
 
-void setStatus(int_least16_t x, int_least16_t y, int_least16_t z) {
+void setStatus(int_least16_t x, int_least16_t y, int_least16_t z, clock_t start, clock_t end) {
 
 	// Daten zeichnen
 	move( 10, 0);
@@ -39,7 +40,6 @@ void setStatus(int_least16_t x, int_least16_t y, int_least16_t z) {
 	move( 13, 0); clrtoeol();
 
 	int maxx = getmaxx(stdscr);
-	int maxy = getmaxy(stdscr);
 
 	for(int i = 0; i < maxx; i++) {
 		if(i > min(maxx/2, x/10 + maxx/2) && i < max(maxx/2, x/10 + maxx/2)) {
@@ -55,86 +55,12 @@ void setStatus(int_least16_t x, int_least16_t y, int_least16_t z) {
 			addch('z');
 		}
 	}
-
-	// Schrift ausgeben
-
-	move(4,0);
-	printw("state zero: false\n");
-
-	move(3,0);
-	switch(status) {
-	// Gerade gestartet
-	case STATUS_STARTING:
-		move(4,0);
-		printw("state zero: maybe\n");
-		// Sind wir im Steady-State?
-		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-				z*z < STEADY_STATE_THRESHOLD) {
-			status = STATUS_STEADY_STATE;
-			counter = 0;
-		}
-		break;
-	// Gerade im Steady-State
-	case STATUS_STEADY_STATE:
-		move(4,0);
-		printw("state zero: maybe\n");
-
-		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-				z*z < STEADY_STATE_THRESHOLD) {
-			counter++;
-		}
-
-		// Sind wir lange genug im Steady-State geblieben?
-		if(counter > STEADY_STATE_CYCLES) {
-			status = STATUS_AFTER_STEADY_STATE;
-			counter = 0;
-		}
-		break;
-	// Nach dem Steady-State
-	case STATUS_AFTER_STEADY_STATE:
-		move(4,0);
-		printw("state zero: true\n");
-
-		if(!(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-				z*z < STEADY_STATE_THRESHOLD)) {
-			status = STATUS_NOT_STEADY_STATE;
-		}
-		break;
-	// Nach Steady-State mit Bewegung
-	case STATUS_NOT_STEADY_STATE:
-		move(4,0);
-		printw("state zero: false\n");
-
-		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-				z*z < STEADY_STATE_THRESHOLD) {
-			status = STATUS_BEFORE_STEADY_STATE;
-			counter = 0;
-		}
-		break;
-	case STATUS_BEFORE_STEADY_STATE:
-
-		move(4,0);
-		printw("state zero: maybe\n");
-
-		if(x*x < STEADY_STATE_THRESHOLD && y*y < STEADY_STATE_THRESHOLD &&
-				z*z < STEADY_STATE_THRESHOLD) {
-			counter++;
-		}
-		else {
-			status = STATUS_NOT_STEADY_STATE;
-			break;
-		}
-
-		// Sind wir lange genug im Steady-State geblieben?
-		if(counter > STEADY_STATE_CYCLES) {
-			status = STATUS_AFTER_STEADY_STATE;
-			counter = 0;
-		}
-		break;
-	default:
-		break;
-	}
-
+	
+	double usec =  (double) (end-start) / CLOCKS_PER_SEC * 1000000.0;
+	move(15, 0);
+	printw("computation time for %d samples: %f. computation time for 1 sample: %f\n", MEASURE_CYCLES, usec, usec / MEASURE_CYCLES);
+	printw("Number of samples per second: %ld", (long int)(1/usec * 1000L));
+	
 	refresh();
 }
 
@@ -166,13 +92,14 @@ int main(int argc, char **argv)
 
 		// User hat eine Taste gedrückt
 		if ((key = getch()) != ERR) {
-
 			break;
 		}
 
 		// Daten abrufen
-		int_least16_t x,y,z;
+		int_least16_t x(0), y(0), z(0);
 
+		clock_t start = clock();
+		
 		for(int i = 0; i < MEASURE_CYCLES; i++) {
 			usbRead(CUSTOM_RQ_DATA, 0, buffer, CUSTOM_RQ_DATA_LEN);
 
@@ -186,7 +113,9 @@ int main(int argc, char **argv)
 		y /= MEASURE_CYCLES;
 		z /= MEASURE_CYCLES;
 
-		setStatus(x,y,z);
+    clock_t end = clock();
+		
+		setStatus(x, y, z, start, end);
 
 	}
 
