@@ -18,6 +18,7 @@
 #include "TWI.h"
 #include "usbdrv/usbdrv.h"
 
+uint8_t flag = 0;
 
 int main(void)
 {
@@ -26,6 +27,8 @@ int main(void)
 
 	// USB initialisieren, Ports setzen
 	usbInit();
+	
+	twiInit();
 
 	// Reenumeration forsieren
 	usbForceDisconnect();
@@ -35,13 +38,13 @@ int main(void)
 	DDRC = 0;
 	PORTC = (1 << 0) | (1 << 1);
 	
-	// VCC-Versorgung für Chip
+	// VCC-Versorgung für die LED
 	DDRB = 0xFF;
 	PORTB = 0;
+		
+	//twiSendWriteAddress();
+	status = 2;
 	
-	// TWI starten
-	TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
-
 	// USB: Nachrichtenschleife ausführen, watchdog zurücksetzen, USB-Nachrichten abrufen,
 	// I2C-Nachrichten abrufen
 	while(1)
@@ -50,7 +53,12 @@ int main(void)
 
 		// Auf Nachricht warten
 		usbPoll();
-		twiPoll();
+		if(status == 1) {
+			twiSendReadAddress();
+		}
+		else if (status == 2) {
+			twiSendWriteAddress();
+		}
 	}
 
 	return 0;

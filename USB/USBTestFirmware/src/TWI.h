@@ -9,6 +9,20 @@
 #define SLA_W 0x70
 #define SLA_R 0x71
 
+#define TWI_START 					TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE);
+#define TWI_START_NO_INT 		TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
+#define TWI_SEND  					TWCR = (1 << TWINT)								 | (1 << TWEN) | (1 << TWIE);
+#define TWI_RECV_ACK				TWCR = (1 << TWINT)								 | (1 << TWEN) | (1 << TWIE)							| (1 << TWEA);
+#define TWI_RECV_NACK				TWCR = (1 << TWINT)								 | (1 << TWEN) | (1 << TWIE);
+#define TWI_STOP  					TWCR = (1 << TWINT)								 | (1 << TWEN) 							| (1 << TWSTO);
+
+/// Status bit to check for second start (get the data)
+extern volatile uint8_t status;
+
 void twiPoll();
+void twiInit();
+
+void twiSendWriteAddress();
+void twiSendReadAddress();
 
 #endif

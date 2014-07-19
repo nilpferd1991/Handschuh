@@ -9,8 +9,9 @@
 // Deklaration der externen Daten
 uint8_t sensorData[BUFFER_SIZE];
 uint8_t messageData[BUFFER_SIZE];
-// Puffer mit der Nachricht nach draußen. Sie enthält maximal BUFFER_SIZE Zeichen.
-unsigned char dataBuffer[BUFFER_SIZE];
+
+
+static unsigned char bytesRemaining, currentPosition;
 
 
 // Trennt die Verbindung zum Host für ca. 25 ms und meldet sich danach neu an
@@ -28,9 +29,11 @@ void usbForceDisconnect()
 	sei();
 }
 
+
+
 // Diese Funktion wird immer dann aufgerufen, wenn eine neue Nachricht (vom Host) eintrifft
 // setupData enthält die Kenngrößen der Nachricht.
-usbMsgLen_t usbFunctionSetup(uchar setupData[8])
+USB_PUBLIC usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 {
 	// Setup-Nachricht vom Host ins richtige Format umwandeln
 	usbRequest_t *request = (void*)setupData;
@@ -43,6 +46,8 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	// ECHO
 	if(request->bRequest == CUSTOM_RQ_ECHO)
 	{
+		// Puffer mit der Nachricht nach draußen. Sie enthält maximal BUFFER_SIZE Zeichen.
+		unsigned char dataBuffer[BUFFER_SIZE];
 		// Sendet den Request zurück wie er gekommen ist
 		// Dient zum Test der Funktionalität
 		dataBuffer[0] = request->wLength.bytes[0];
@@ -58,10 +63,11 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	// Gebe die Sensordaten an den Host zurück
 	else if(request->bRequest == CUSTOM_RQ_DATA)
 	{
-		usbMsgPtr = sensorData;
-
+		
+		bytesRemaining = request->wLength.word;
+		currentPosition = 0;
 		// Datenformat: [Sensordaten]*BUFFER_SIZE
-		return CUSTOM_RQ_DATA_LEN;
+		return USB_NO_MSG;
 	}
 	
 	// LOG
@@ -76,4 +82,19 @@ usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 
 	// Im allgemeinen Fall gibt es diese Nachricht gar nicht. Wir geben deshalb nichts zurück.
 	return 0;
+}
+
+// NOT USED
+USB_PUBLIC uchar usbFunctionRead(unsigned char *data, unsigned char len)
+{
+	unsigned char i;
+	if(len > bytesRemaining)                // len is max chunk size
+		len = bytesRemaining;               // send an incomplete chunk
+	bytesRemaining -= len;
+	
+	status = 2;
+	
+	for(i = currentPosition; i < len; i++)
+		data[i] = sensorData[i]; // copy the data to the buffer
+	return len;                             // return real chunk size*/
 }
