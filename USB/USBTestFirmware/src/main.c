@@ -28,6 +28,7 @@ int main(void)
 	// USB initialisieren, Ports setzen
 	usbInit();
 	
+	// TWI initialisieren
 	twiInit();
 
 	// Reenumeration forsieren
@@ -40,11 +41,8 @@ int main(void)
 	
 	// VCC-Versorgung für die LED
 	DDRB = 0xFF;
-	PORTB = 0;
-		
-	//twiSendWriteAddress();
-	status = 2;
-	
+	PORTB = (1 << 0);
+			
 	// USB: Nachrichtenschleife ausführen, watchdog zurücksetzen, USB-Nachrichten abrufen,
 	// I2C-Nachrichten abrufen
 	while(1)
@@ -53,12 +51,7 @@ int main(void)
 
 		// Auf Nachricht warten
 		usbPoll();
-		if(status == 1) {
-			twiSendReadAddress();
-		}
-		else if (status == 2) {
-			twiSendWriteAddress();
-		}
+		twiPoll();
 	}
 
 	return 0;

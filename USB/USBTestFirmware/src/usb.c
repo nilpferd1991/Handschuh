@@ -43,31 +43,13 @@ USB_PUBLIC usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 
 	// Der RequestCode des Requests entscheidet über die Art der Programmausführung
 
-	// ECHO
-	if(request->bRequest == CUSTOM_RQ_ECHO)
-	{
-		// Puffer mit der Nachricht nach draußen. Sie enthält maximal BUFFER_SIZE Zeichen.
-		unsigned char dataBuffer[BUFFER_SIZE];
-		// Sendet den Request zurück wie er gekommen ist
-		// Dient zum Test der Funktionalität
-		dataBuffer[0] = request->wLength.bytes[0];
-		dataBuffer[1] = request->wLength.bytes[1];
-		dataBuffer[2] = request->wValue.bytes[0];
-		dataBuffer[3] = request->wValue.bytes[1];
-		usbMsgPtr = dataBuffer;
-		// Datenformat: [Länge]*2 [Wert]*2
-		return CUSTOM_RQ_ECHO_LEN;
-	}
-
 	// DATA
 	// Gebe die Sensordaten an den Host zurück
-	else if(request->bRequest == CUSTOM_RQ_DATA)
+	if(request->bRequest == CUSTOM_RQ_DATA)
 	{
-		
-		bytesRemaining = request->wLength.word;
-		currentPosition = 0;
-		// Datenformat: [Sensordaten]*BUFFER_SIZE
-		return USB_NO_MSG;
+		usbMsgPtr = sensorData;
+		twiGetData();
+		return CUSTOM_RQ_DATA_LEN;
 	}
 	
 	// LOG
@@ -75,26 +57,17 @@ USB_PUBLIC usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	else if(request->bRequest == CUSTOM_RQ_LOG)
 	{
 		usbMsgPtr = messageData;
-
-		// Datenformat: BUFFER_SIZE
 		return CUSTOM_RQ_LOG_LEN;
+	}
+	
+	// TOGGLE
+	// Wechsle zwischen den einzelnen Sensoren
+	else if(request->bRequest == CUSTOM_RQ_TOGGLE)
+	{
+		twiToggle();
+		return CUSTOM_RQ_TOGGLE_LEN;
 	}
 
 	// Im allgemeinen Fall gibt es diese Nachricht gar nicht. Wir geben deshalb nichts zurück.
 	return 0;
-}
-
-// NOT USED
-USB_PUBLIC uchar usbFunctionRead(unsigned char *data, unsigned char len)
-{
-	unsigned char i;
-	if(len > bytesRemaining)                // len is max chunk size
-		len = bytesRemaining;               // send an incomplete chunk
-	bytesRemaining -= len;
-	
-	status = 2;
-	
-	for(i = currentPosition; i < len; i++)
-		data[i] = sensorData[i]; // copy the data to the buffer
-	return len;                             // return real chunk size*/
 }

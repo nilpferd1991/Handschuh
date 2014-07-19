@@ -14,18 +14,17 @@
 // Größe ist in Byte angegeben
 #define BUFFER_SIZE 16
 
-// Das Echo-Kommande sendet eine 2-Byte-Nachricht zurück, die aus dem Value (2 Bytes) besteht.
-// Es dient zum Test der Verbindung.
-#define CUSTOM_RQ_ECHO 				0
-#define CUSTOM_RQ_ECHO_LEN 			4
-
 // Das Data-Kommando fragt die momentanen Daten vom Handschuh ab. Die Antwort ist ein BUFFER_SIZE-Byte-Puffer
 // mit den momentanen Sensordaten
 #define CUSTOM_RQ_DATA 				1
 #define CUSTOM_RQ_DATA_LEN			BUFFER_SIZE
 
 // Das Log-Kommando fragt die momentanen Daten vom Log des TWI-Modls ab. Die Antwort ist ein BUFFER_SIZE-Byte-Puffer
-#define CUSTOM_RQ_LOG 				3
+#define CUSTOM_RQ_LOG 				2
 #define CUSTOM_RQ_LOG_LEN			BUFFER_SIZE
+
+// Das Toggle-Kommando wechselt zwischen den möglichen Sensoren.
+#define CUSTOM_RQ_TOGGLE 			3
+#define CUSTOM_RQ_TOGGLE_LEN			0
 
 #endif /* CERTIFICATE_H_ */
