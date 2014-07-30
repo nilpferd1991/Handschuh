@@ -1,1 +1,1 @@
-../../USBTestFirmware/src/certificate.h
+../firmware/certificate.h

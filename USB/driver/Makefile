@@ -15,15 +15,17 @@
 USBFLAGS = `libusb-config --cflags`
 USBLIBS = `libusb-config --libs`
 NCLIBS = -lncurses
+ROOTLIBS = `root-config --glibs`
+ROOTFLAGS = `root-config --cflags`
 
-NAME = main
+NAME = root
 
-OBJECTS = opendevice/opendevice.o $(NAME).o usb.o
+OBJECTS = opendevice/opendevice.o $(NAME).o usb.o driver.o
 
 CC		= g++
 GCC		= g++
-CFLAGS	= $(CPPFLAGS) $(USBFLAGS) -O -g -Wall
-LIBS	= $(USBLIBS) $(NCLIBS)
+CFLAGS	= $(CPPFLAGS) $(USBFLAGS) $(ROOTFLAGS) -O -g -Wall
+LIBS	= $(USBLIBS) $(NCLIBS) $(ROOTLIBS)
 
 PROGRAM = $(NAME)
 

@@ -6,21 +6,12 @@
 //============================================================================
 
 
-#include <stdlib.h>
-#include <usb.h>
-
-#include "certificate.h"
-#include "usb.h"
+#include "driver.h"
 
 #include <ncurses.h>
 
 int counter = 0;
 int status = 0;
-
-#define OFFSET_X 0
-#define OFFSET_Y 0
-#define OFFSET_Z 0
-#define MEASURE_CYCLES 5
 
 #include <sys/time.h>
 #include <ctime>
@@ -58,23 +49,13 @@ void setStatus(int_least16_t x, int_least16_t y, int_least16_t z, clock_t start,
 	
 	double usec =  (double) (end-start) / CLOCKS_PER_SEC * 1000000.0;
 	move(15, 0);
-	printw("computation time for %d samples: %f. computation time for 1 sample: %f\n", MEASURE_CYCLES, usec, usec / MEASURE_CYCLES);
+	printw("computation time for %d samples: %f. computation time for 1 sample: %f\n", driver::MEASURE_CYCLES, usec, usec / driver::MEASURE_CYCLES);
 	printw("Number of samples per second: %ld", (long int)(1/usec * 1000L));
 	
 	refresh();
 }
 
-int main(int argc, char **argv)
-{
-	// Puffer für die Datenverarbeitung
-	uint8_t * buffer;
-
-	// USB-Schnittstelle initialisieren und mit Handschuh verbinden
-	usbInit();
-
-	// Data-Test
-	buffer = new uint8_t[CUSTOM_RQ_DATA_LEN];
-
+void nc_init() {
 	// Ncurses - Init
 	initscr();
 	noecho();	// Die Eingaben nicht ausgeben
@@ -85,10 +66,18 @@ int main(int argc, char **argv)
 	// Startnachricht
 	printw("Please go to state zero.\n");
 	refresh();
+}
 
-	int key;
+int main(int argc, char **argv)
+{
+	driver glove = driver();
 
-	for(;;) {
+	// Initialize ncurses
+	nc_init();
+	
+	FILE * file = fopen("output.dat", "w");
+
+	for(int key;;) {
 
 		// User hat eine Taste gedrückt
 		if ((key = getch()) != ERR) {
@@ -99,28 +88,16 @@ int main(int argc, char **argv)
 		int_least16_t x(0), y(0), z(0);
 
 		clock_t start = clock();
+		glove.catch_data(x, y, z);
+	  clock_t end = clock();
 		
-		for(int i = 0; i < MEASURE_CYCLES; i++) {
-			usbRead(CUSTOM_RQ_DATA, 0, buffer, CUSTOM_RQ_DATA_LEN);
-
-			x += ((int_least8_t)buffer[1] << 2 | (int_least8_t)(buffer[0] >> 6)) - OFFSET_X;
-			y += ((int_least8_t)buffer[3] << 2 | (int_least8_t)(buffer[2] >> 6)) - OFFSET_Y;
-			z += ((int_least8_t)buffer[5] << 2 | (int_least8_t)(buffer[4] >> 6)) - OFFSET_Z;
-
-		}
-
-		x /= MEASURE_CYCLES;
-		y /= MEASURE_CYCLES;
-		z /= MEASURE_CYCLES;
-
-    clock_t end = clock();
+		fprintf(file, "%d %d %d\n", x, y, z);
 		
 		setStatus(x, y, z, start, end);
-
 	}
 
 	usbClose();
-
+	fclose(file);
 	endwin();
 	return 0;
 }

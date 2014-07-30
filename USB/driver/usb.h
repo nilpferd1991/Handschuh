@@ -7,8 +7,8 @@
 //				von Daten auf einem ganz rudimentären Niveau ermöglichen
 //============================================================================
 
-#ifndef USB_H_C
-#define USB_H_C
+#ifndef __usb_h_included__
+#define __usb_h_included__
 
 #include <usb.h>
 
@@ -35,4 +35,4 @@ void usbRead(const int requestCode, const int value, uint8_t * buffer, const int
 // Dient zum Steuern des Handschuhs.
 void usbWrite(const int requestCode, const int value);
 
-#endif /* USB_H_C */
+#endif
