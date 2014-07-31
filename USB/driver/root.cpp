@@ -10,9 +10,13 @@
 
 #define CALIBRATION 0
 
-const Int_t OFFSET_X = -2;
+/*const Int_t OFFSET_X = -2;
 const Int_t OFFSET_Y = -39;
-const Int_t OFFSET_Z = 252;
+const Int_t OFFSET_Z = 252;*/
+const Int_t OFFSET_X = 0;
+const Int_t OFFSET_Y = 0;
+const Int_t OFFSET_Z = 0;
+
 
 template <typename T>
 class buffer {
