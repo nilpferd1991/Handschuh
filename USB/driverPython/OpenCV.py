@@ -63,6 +63,7 @@ class MLPClassifier(Classifier):
         else:
             return CLASS_NONE
 
+
 class KNClassifier(Classifier):
     def __init__(self):
         Classifier.__init__(self)

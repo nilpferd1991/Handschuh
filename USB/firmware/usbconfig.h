@@ -33,6 +33,7 @@ section at the end of this file).
 #define USB_CFG_DMINUS_BIT      4
 /* This is the bit number in USB_CFG_IOPORT where the USB D- line is connected.
  * This may be any bit in the port.
+ * We use the green cable!
  */
 #define USB_CFG_DPLUS_BIT       2
 /* This is the bit number in USB_CFG_IOPORT where the USB D+ line is connected.
@@ -42,6 +43,7 @@ section at the end of this file).
  * it is required if you use the USB_COUNT_SOF feature. If you use D- for the
  * interrupt, the USB interrupt will also be triggered at Start-Of-Frame
  * markers every millisecond.]
+ * We use the white cable!
  */
 #define USB_CFG_CLOCK_KHZ       (F_CPU/1000)
 /* Clock rate of the AVR in kHz. Legal values are 12000, 12800, 15000, 16000,

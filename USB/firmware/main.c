@@ -38,11 +38,7 @@ int main(void)
 	// PC0, PC1: Eingänge mit Pullup = DATEN
 	DDRC = 0;
 	PORTC = (1 << 0) | (1 << 1);
-	
-	// VCC-Versorgung für die LED
-	DDRB = 0xFF;
-	PORTB = (1 << 0);
-			
+
 	// USB: Nachrichtenschleife ausführen, watchdog zurücksetzen, USB-Nachrichten abrufen,
 	// I2C-Nachrichten abrufen
 	while(1)

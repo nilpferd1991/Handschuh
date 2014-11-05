@@ -11,11 +11,11 @@
 class driver {
 
 public:
-	driver() { usbInit(); }
+	driver() : m_x(0), m_y(0), m_z(0) { usbInit(); }
 	static const int OFFSET_X = 0;
 	static const int OFFSET_Y = 0;
 	static const int OFFSET_Z = 0;
-	static const int MEASURE_CYCLES = 1;
+	static const int MEASURE_CYCLES = 10;
 
 	/**
 	* catch_data

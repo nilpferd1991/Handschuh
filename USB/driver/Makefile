@@ -18,14 +18,14 @@ NCLIBS = -lncurses
 ROOTLIBS = `root-config --glibs`
 ROOTFLAGS = `root-config --cflags`
 
-NAME = root
+NAME = main
 
 OBJECTS = opendevice/opendevice.o $(NAME).o usb.o driver.o
 
 CC		= g++
 GCC		= g++
-CFLAGS	= $(CPPFLAGS) $(USBFLAGS) $(ROOTFLAGS) -O -g -Wall
-LIBS	= $(USBLIBS) $(NCLIBS) $(ROOTLIBS)
+CFLAGS	= $(CPPFLAGS) $(USBFLAGS) -O -g -Wall
+LIBS	= $(USBLIBS) $(NCLIBS)
 
 PROGRAM = $(NAME)
 

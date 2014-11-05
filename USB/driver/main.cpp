@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 
 		clock_t start = clock();
 		glove.catch_data(x, y, z);
-	  clock_t end = clock();
+		clock_t end = clock();
 		
 		fprintf(file, "%d %d %d\n", x, y, z);
 		
