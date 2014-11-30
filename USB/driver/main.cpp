@@ -19,7 +19,7 @@ int status = 0;
 #define min(x,y) (x > y ? y : x)
 #define max(x,y) (x < y ? y : x)
 
-void setStatus(int_least16_t x, int_least16_t y, int_least16_t z, clock_t start, clock_t end) {
+void setStatus(int_least16_t x, int_least16_t y, int_least16_t z, clock_t start, clock_t end, int_least16_t test) {
 
 	// Daten zeichnen
 	move( 10, 0);
@@ -49,8 +49,9 @@ void setStatus(int_least16_t x, int_least16_t y, int_least16_t z, clock_t start,
 	
 	double usec =  (double) (end-start) / CLOCKS_PER_SEC * 1000000.0;
 	move(15, 0);
-	printw("computation time for %d samples: %f. computation time for 1 sample: %f\n", driver::MEASURE_CYCLES, usec, usec / driver::MEASURE_CYCLES);
-	printw("Number of samples per second: %ld", (long int)(1/usec * 1000L));
+	printw("computation time for %d samples: %f. computation time for 1 sample: %f\n", test, usec, usec / test);
+	printw("Number of samples per second: %ld\n", (long int)(1/usec * 1000L));
+	printw("Test variable: %ld\n", test);
 	
 	refresh();
 }
@@ -85,15 +86,15 @@ int main(int argc, char **argv)
 		}
 
 		// Daten abrufen
-		int_least16_t x(0), y(0), z(0);
+		int_least16_t x(0), y(0), z(0), test(0);
 
 		clock_t start = clock();
-		glove.catch_data(x, y, z);
+		glove.catch_data(x, y, z, test);
 		clock_t end = clock();
 		
 		fprintf(file, "%d %d %d\n", x, y, z);
 		
-		setStatus(x, y, z, start, end);
+		setStatus(x, y, z, start, end, test);
 	}
 
 	usbClose();

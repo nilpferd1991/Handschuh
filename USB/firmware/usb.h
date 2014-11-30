@@ -23,15 +23,4 @@
 // Nach jedem Reset sollte eine Reenumerartion durchgeführt werden
 void usbForceDisconnect();
 
-// Sensordaten welche an den Host geschickt werden
-// Die Definition muss extern sein, damit auch alle auf die selbe Speicherstelle zugreifen
-// Die SensorDaten haben das folgende Format:
-//		 Daten1	 	 Daten 2	 ....		 Daten 15		 Counter
-// 		- 10 bit -	- 10 Bit -	 ....		- 10 Bit -		- 10 Bit -	|| 16 x 10 bit = 160 bit
-//		Füllung															|| + 96 bit leer = 256 bit = 32 byte
-extern uint8_t sensorData[BUFFER_SIZE];
-
-/// A message buffer to control the loggig of the TWI module
-extern uint8_t messageData[BUFFER_SIZE];
-
 #endif /* USB_H_ */

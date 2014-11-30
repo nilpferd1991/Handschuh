@@ -13,7 +13,7 @@ FUSE_L  = 0x9F# see below for fuse values for particular devices
 FUSE_H  = 0x99
 AVRDUDE = avrdude -c stk500v2 -p $(DEVICE) # edit this line for your programmer
 
-CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0
+CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0 -std=c99
 OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o TWI.o usb.o main.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)

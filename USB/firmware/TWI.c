@@ -9,9 +9,11 @@ const uint8_t MAX_SENSOR_NUMBER = 1;
 uint8_t sensorRead = 0;
 /// Status bit to check for second start (get the data)
 volatile uint8_t status = 2;
-/// The status of the current running sensor
-uint8_t sensorNumber = 0;
+/// In this buffer we write the incoming sensor data
+uint8_t sensorData[BUFFER_SIZE];
 
+uint16_t data_cycles_gathered = 0;
+uint16_t data_1 = 0, data_2 = 0, data_3 = 0;
 
 /**
  * twiPoll
@@ -58,16 +60,14 @@ void twiPoll() {
  * twiGetData
  * Start a new process
  */
-twiGetData() {
-	 status = 2;
+void twiGetData() {
+	status = 2;
 }
 
 void twiSendWriteAddress() {
 	cli();
-	messageData[0] = 1;
 	status = 0;
 	TWI_START_NO_INT;
-	uint8_t counter = 0;
 	while(!(TWCR & (1 << TWINT)));
 	TWDR = SLA_W;
 	TWI_SEND;
@@ -76,7 +76,6 @@ void twiSendWriteAddress() {
 
 void twiSendReadAddress() {
 	cli();
-	messageData[0] = 4;
 	status = 0;
 	TWI_START_NO_INT;
 	while(!(TWCR & (1 << TWINT)));
@@ -93,21 +92,18 @@ ISR(TWI_vect) {
 	switch (TWSR & 0xF8) {
 	// Write-Adresse angenommen. Nun senden wir den Offset 0x02
 	case TW_MT_SLA_ACK:
-		messageData[0] = 2;
 		TWDR = 0x02;
 		TWI_SEND;
 		break;
 
 	// Das Offset wurde angenommen. Nun können wir die Daten lesen. Also senden wir Start:
 	case TW_MT_DATA_ACK:
-		messageData[0] = 3;
 		TWI_STOP;
 		status = 1;
 		break;
 
 	// Die Read-Adresse wurde angenommen. Nun können wir Daten abholen:
 	case TW_MR_SLA_ACK:
-		messageData[0] = 5;
 		sensorRead = 0;
 		TWI_RECV_ACK;
 		break;
@@ -119,26 +115,32 @@ ISR(TWI_vect) {
 			TWI_RECV_ACK;
 		}
 		else {
-			messageData[0] = 6;
 			TWI_RECV_NACK;
 		}
 		break;
 
 	// Das letzte Datenpaket ist angekommen.
 	case TW_MR_DATA_NACK:
-		messageData[0] = 7;
 		sensorRead = 0;
+
+		data_1 += ((int_least8_t)sensorData[1] << 2 | (int_least8_t)(sensorData[0] >> 6));
+		data_2 += ((int_least8_t)sensorData[3] << 2 | (int_least8_t)(sensorData[2] >> 6));
+		data_3 += ((int_least8_t)sensorData[5] << 2 | (int_least8_t)(sensorData[4] >> 6));
+
+		data_cycles_gathered++;
 		TWI_STOP;
 		while(TWCR & (1<<TWSTO));
+
+		if(data_cycles_gathered < 8) {
+			status = 2;
+		}
+
 		break;
 		
 	// Scheinbar ist etwas falsch gelaufen. Wir brechen ab.
 	default:
 		sensorRead = 0;
 		status = 0;
-
-		messageData[3] = TWSR & 0xF8;
-		messageData[4] = 9;
 		// Start/Stop senden
 		TWI_START_NO_INT;
 		break;
@@ -148,11 +150,12 @@ ISR(TWI_vect) {
 /**
  * twiToggle
  * Toggle between the sensors. Turn on the sensors on PB0, PB1, etc.
+ * WHAT THE FUCK? THIS THROWS UP EVERYTHING!
  */
-twiToggle() {
-	sensorNumber++;
+void twiToggle() {
+	/*sensorNumber++;
 	if(sensorNumber > MAX_SENSOR_NUMBER) {
 		sensorNumber = 0;
 	}
-	PORTB = (1 << sensorNumber);
+	PORTB = (1 << sensorNumber);*/
 }

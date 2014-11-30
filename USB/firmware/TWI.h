@@ -1,5 +1,4 @@
-#ifndef TWI_H_
-#define TWI_H_
+#pragma once
 
 #include <util/twi.h>
 #include "usb.h"
@@ -19,5 +18,8 @@ void twiPoll();
 void twiInit();
 void twiToggle();
 void twiGetData();
+void twiSendWriteAddress();
+void twiSendReadAddress();
 
-#endif
+extern uint16_t data_cycles_gathered;
+extern uint16_t data_1, data_2, data_3;

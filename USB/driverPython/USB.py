@@ -43,14 +43,15 @@ class USB:
     def catch_raw_data(self):
         sensor_data = self.device.ctrl_transfer(0xC0, CUSTOM_RQ_DATA, 0, 0, CUSTOM_RQ_DATA_LEN)
 
-        x = ctypes.c_int8(sensor_data[1]).value << 2 | ctypes.c_int8(sensor_data[0] >> 6).value
-        y = ctypes.c_int8(sensor_data[3]).value << 2 | ctypes.c_int8(sensor_data[2] >> 6).value
-        z = ctypes.c_int8(sensor_data[5]).value << 2 | ctypes.c_int8(sensor_data[4] >> 6).value
+        x = ctypes.c_int16((sensor_data[1] << 8) + sensor_data[0]).value
+        y = ctypes.c_int16((sensor_data[3] << 8) + sensor_data[2]).value
+        z = ctypes.c_int16((sensor_data[5] << 8) + sensor_data[4]).value
+        count = (sensor_data[7] << 8) + sensor_data[6];
 
-        return np.array([-y/512.0, x/512.0, z/512.0])
+        return np.array([-y/512.0/count, x/512.0/count, z/512.0/count])
 
     def catch_data(self):
-        return self.catch_raw_data()
+        return self.map(self.catch_raw_data())
 
     @staticmethod
     def map(coords):

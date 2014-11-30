@@ -12,7 +12,7 @@
 
 // Buffer-Größe eines Buffers in unsigned char abgespeichert
 // Größe ist in Byte angegeben
-#define BUFFER_SIZE 16
+#define BUFFER_SIZE 8
 
 // Das Data-Kommando fragt die momentanen Daten vom Handschuh ab. Die Antwort ist ein BUFFER_SIZE-Byte-Puffer
 // mit den momentanen Sensordaten

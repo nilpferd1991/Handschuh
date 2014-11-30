@@ -7,12 +7,7 @@
 #include <util/delay.h>
 
 // Deklaration der externen Daten
-uint8_t sensorData[BUFFER_SIZE];
 uint8_t messageData[BUFFER_SIZE];
-
-
-static unsigned char bytesRemaining, currentPosition;
-
 
 // Trennt die Verbindung zum Host für ca. 25 ms und meldet sich danach neu an
 void usbForceDisconnect()
@@ -47,8 +42,31 @@ USB_PUBLIC usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 	// Gebe die Sensordaten an den Host zurück
 	if(request->bRequest == CUSTOM_RQ_DATA)
 	{
-		usbMsgPtr = sensorData;
-		twiGetData();
+		uint8_t outgoing_buffer[CUSTOM_RQ_DATA_LEN];
+
+		for(uint8_t i = 0; i < CUSTOM_RQ_DATA_LEN; i++) {
+			outgoing_buffer[i] = 0;
+		}
+		if(data_cycles_gathered == 8) {
+
+			outgoing_buffer[0] = data_1;
+			outgoing_buffer[1] = data_1 >> 8;
+			outgoing_buffer[2] = data_2;
+			outgoing_buffer[3] = data_2 >> 8;
+			outgoing_buffer[4] = data_3;
+			outgoing_buffer[5] = data_3 >> 8;
+			outgoing_buffer[6] = data_cycles_gathered;
+			outgoing_buffer[7] = data_cycles_gathered >> 8;
+
+			data_1 = 0;
+			data_2 = 0;
+			data_3 = 0;
+			data_cycles_gathered = 0;
+
+			twiGetData();
+		}
+
+		usbMsgPtr = outgoing_buffer;
 		return CUSTOM_RQ_DATA_LEN;
 	}
 	
