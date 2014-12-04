@@ -46,12 +46,22 @@ class USB:
         x = ctypes.c_int16((sensor_data[1] << 8) + sensor_data[0]).value
         y = ctypes.c_int16((sensor_data[3] << 8) + sensor_data[2]).value
         z = ctypes.c_int16((sensor_data[5] << 8) + sensor_data[4]).value
-        count = (sensor_data[7] << 8) + sensor_data[6];
+        count = (sensor_data[7] << 8) + sensor_data[6]
 
-        return np.array([-y/512.0/count, x/512.0/count, z/512.0/count])
+        if count != 0:
+            return np.array([-y/512.0/count, x/512.0/count, z/512.0/count])
+        else:
+            return [0, 0, 0]
 
     def catch_data(self):
-        return self.map(self.catch_raw_data())
+        data = [0, 0, 0]
+        for i in xrange(10):
+            try:
+                data += self.catch_raw_data()
+            except Exception:
+                pass
+
+        return 2*data/10.0
 
     @staticmethod
     def map(coords):
