@@ -14,11 +14,9 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 
-#include "usb.h"
-#include "TWI.h"
-#include "usbdrv/usbdrv.h"
-
-uint8_t flag = 0;
+#include <usb.h>
+#include <TWI.h>
+#include <usbdrv/usbdrv.h>
 
 int main(void)
 {
@@ -29,15 +27,10 @@ int main(void)
 	usbInit();
 	
 	// TWI initialisieren
-	twiInit();
+	//twiInit();
 
 	// Reenumeration forsieren
 	usbForceDisconnect();
-
-	// I2C initialisieren
-	// PC0, PC1: Eingänge mit Pullup = DATEN
-	DDRC = 0;
-	PORTC = (1 << 0) | (1 << 1);
 
 	// USB: Nachrichtenschleife ausführen, watchdog zurücksetzen, USB-Nachrichten abrufen,
 	// I2C-Nachrichten abrufen
@@ -47,7 +40,7 @@ int main(void)
 
 		// Auf Nachricht warten
 		usbPoll();
-		twiPoll();
+		//twiPoll();
 	}
 
 	return 0;

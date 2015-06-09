@@ -1,3 +1,4 @@
+#if defined (__AVR_ATmega8515__)
 ;*************************************************************************
 ; Title	:    I2C (Single) Master Implementation
 ; Author:    Peter Fleury <pfleury@gmx.ch>  http://jump.to/fleury
@@ -300,3 +301,4 @@ i2c_put_ack_wait:
 	ret
 	.endfunc
 
+#endif

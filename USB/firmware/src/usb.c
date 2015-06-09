@@ -3,11 +3,16 @@
  * Author: Nils Braun
  */
 
-#include "usb.h"
-#include <util/delay.h>
+#include <usb.h>
+#include <TWI.h>
+#include <logging.h>
 
-// Deklaration der externen Daten
-uint8_t messageData[BUFFER_SIZE];
+#include <certificate.h>
+#include <usbdrv/usbdrv.h>
+#include <util/delay.h>
+#include <avr/io.h>
+#include <avr/wdt.h>
+#include <avr/interrupt.h>
 
 // Trennt die Verbindung zum Host für ca. 25 ms und meldet sich danach neu an
 void usbForceDisconnect()
@@ -68,14 +73,6 @@ USB_PUBLIC usbMsgLen_t usbFunctionSetup(uchar setupData[8])
 
 		usbMsgPtr = outgoing_buffer;
 		return CUSTOM_RQ_DATA_LEN;
-	}
-	
-	// LOG
-	// Gebe die Logdaten an den Host zurück
-	else if(request->bRequest == CUSTOM_RQ_LOG)
-	{
-		usbMsgPtr = messageData;
-		return CUSTOM_RQ_LOG_LEN;
 	}
 	
 	// TOGGLE

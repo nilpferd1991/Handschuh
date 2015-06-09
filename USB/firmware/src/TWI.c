@@ -1,7 +1,12 @@
-#include "TWI.h"
+#include <TWI.h>
+#include <logging.h>
+
+#include <util/twi.h>
+#include <usb.h>
+#include <certificate.h>
 #include <avr/interrupt.h>
 
-#define DEBUG 0
+#include <i2c/i2cmaster.h>
 
 const uint8_t MAX_SENSOR_NUMBER = 1;
 
@@ -11,9 +16,6 @@ uint8_t sensorRead = 0;
 volatile uint8_t status = 2;
 /// In this buffer we write the incoming sensor data
 uint8_t sensorData[BUFFER_SIZE];
-
-uint16_t data_cycles_gathered = 0;
-uint16_t data_1 = 0, data_2 = 0, data_3 = 0;
 
 /**
  * twiPoll
@@ -39,8 +41,13 @@ uint16_t data_1 = 0, data_2 = 0, data_3 = 0;
  * Initialize the TWI module with the corresponding frequency
  */
 void twiInit() {
-	TWSR = 0;
-	TWBR = ((F_CPU/100000L) - 16)/2;
+
+	i2c_init();
+
+	// I2C initialisieren
+	// PC0, PC1: Eingänge mit Pullup = DATEN
+	DDRC = 0;
+	PORTC = (1 << 0) | (1 << 1);
 }
 
 /** 
@@ -48,11 +55,11 @@ void twiInit() {
  * Start a new data aquisition if possible
  */
 void twiPoll() {
-	if(status == 1) {
-		twiSendReadAddress();
-	}
-	else if (status == 2) {
+	if(status == 0) {
 		twiSendWriteAddress();
+	}
+	else if (status == 1) {
+		twiSendReadAddress();
 	}
 }
 
@@ -61,90 +68,45 @@ void twiPoll() {
  * Start a new process
  */
 void twiGetData() {
-	status = 2;
+	status = 0;
 }
 
 void twiSendWriteAddress() {
 	cli();
-	status = 0;
-	TWI_START_NO_INT;
-	while(!(TWCR & (1 << TWINT)));
-	TWDR = SLA_W;
-	TWI_SEND;
+	// Set the device into read mode
+	i2c_start(SLA_W);
+
+	// Send the data offset
+	i2c_write(0x02);
+
+	// Stop the transmission
+	i2c_stop();
+	status = 1;
 	sei();
 }
 
 void twiSendReadAddress() {
 	cli();
-	status = 0;
-	TWI_START_NO_INT;
-	while(!(TWCR & (1 << TWINT)));
-	TWDR = SLA_R;
-	TWI_SEND;
-	sei();
-}
-
-/**
- * ISR(TWI_vect)
- * Is executed whenever a new TWI signal comes from the slave.
- */
-ISR(TWI_vect) {
-	switch (TWSR & 0xF8) {
-	// Write-Adresse angenommen. Nun senden wir den Offset 0x02
-	case TW_MT_SLA_ACK:
-		TWDR = 0x02;
-		TWI_SEND;
-		break;
-
-	// Das Offset wurde angenommen. Nun können wir die Daten lesen. Also senden wir Start:
-	case TW_MT_DATA_ACK:
-		TWI_STOP;
-		status = 1;
-		break;
-
-	// Die Read-Adresse wurde angenommen. Nun können wir Daten abholen:
-	case TW_MR_SLA_ACK:
-		sensorRead = 0;
-		TWI_RECV_ACK;
-		break;
-
-	// Neue Daten sind angekommen. Wir rufen sie ab und fordern evtl neue an.
-	case TW_MR_DATA_ACK:
-		if(sensorRead < 7) {
-			sensorData[sensorRead++] = TWDR;
-			TWI_RECV_ACK;
-		}
-		else {
-			TWI_RECV_NACK;
-		}
-		break;
-
-	// Das letzte Datenpaket ist angekommen.
-	case TW_MR_DATA_NACK:
-		sensorRead = 0;
-
-		data_1 += ((int_least8_t)sensorData[1] << 2 | (int_least8_t)(sensorData[0] >> 6));
-		data_2 += ((int_least8_t)sensorData[3] << 2 | (int_least8_t)(sensorData[2] >> 6));
-		data_3 += ((int_least8_t)sensorData[5] << 2 | (int_least8_t)(sensorData[4] >> 6));
-
-		data_cycles_gathered++;
-		TWI_STOP;
-		while(TWCR & (1<<TWSTO));
-
-		if(data_cycles_gathered < 8) {
-			status = 2;
-		}
-
-		break;
-		
-	// Scheinbar ist etwas falsch gelaufen. Wir brechen ab.
-	default:
-		sensorRead = 0;
-		status = 0;
-		// Start/Stop senden
-		TWI_START_NO_INT;
-		break;
+	i2c_start(SLA_R);
+	for(sensorRead = 0; sensorRead < 6; sensorRead++) {
+		sensorData[sensorRead] = i2c_readAck();
 	}
+	sensorData[sensorRead] = i2c_readNak();
+
+	data_1 += ((int_least8_t)sensorData[1] << 2 | (int_least8_t)(sensorData[0] >> 6));
+	data_2 += ((int_least8_t)sensorData[3] << 2 | (int_least8_t)(sensorData[2] >> 6));
+	data_3 += ((int_least8_t)sensorData[5] << 2 | (int_least8_t)(sensorData[4] >> 6));
+
+	data_cycles_gathered++;
+	i2c_stop();
+
+	status = 2;
+
+	if(data_cycles_gathered < 8) {
+		status = 0;
+	}
+
+	sei();
 }
 
 /**

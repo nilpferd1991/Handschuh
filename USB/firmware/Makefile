@@ -9,8 +9,8 @@
 
 DEVICE  = atmega16
 F_CPU   = 16000000	# in Hz
-FUSE_L  = 0xDF      # CKSEL=111, SUT=01
-FUSE_H  = 0xD9      # defaults
+FUSE_L  = 0xDF# CKSEL=111, SUT=01 = DF
+FUSE_H  = 0xD9# defaults 99 for atmega16, d9 for atmega8515
 PROGRAMMER = stk500v2 
 CFLAGS  = -DDEBUG_LEVEL=0 -std=c99 -Wall -Os
 
